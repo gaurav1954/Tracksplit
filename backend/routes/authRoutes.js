@@ -1,7 +1,9 @@
-const authRouter = Router();
+const express = require('express');
+const authRouter = express.Router();
+const { getAllUsers, userLogIn, userSignUp } = require('../controller/authController')
 
 authRouter.get("/", getAllUsers);
-authRouter.post("/signup", validate(signUpValidator), userSignUp);
-authRouter.post("/login", validate(loginValidator), userLogIn);
-authRouter.get("/auth-status", verifyToken, verifyUser);
-export default authRouter;
+authRouter.post("/signup", userSignUp);
+authRouter.post("/login", userLogIn);
+
+module.exports = authRouter;
