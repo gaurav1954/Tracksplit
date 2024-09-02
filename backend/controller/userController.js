@@ -6,7 +6,9 @@ const Group = require('../models/Group');
 exports.addFriend = async (req, res) => {
     try {
         const { friendPhoneNumber } = req.body;
-        const user = await User.findOne({ phoneNumber: req.params.phoneNumber });
+        const userPhoneNumber = res.locals.jwtData.phoneNumber;
+
+        const user = await User.findOne({ phoneNumber: userPhoneNumber });
         const friend = await User.findOne({ phoneNumber: friendPhoneNumber });
 
         if (!user || !friend) {
@@ -14,8 +16,8 @@ exports.addFriend = async (req, res) => {
         }
 
         // Add friend to user's friends list if not already added
-        if (!user.friends.includes(friendPhoneNumber)) {
-            user.friends.push(friendPhoneNumber);
+        if (!user.friends.includes(friend._id)) {
+            user.friends.push(friend._id);
             await user.save();
         }
 

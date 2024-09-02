@@ -1,11 +1,8 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { createToken } = require('../utils/tokenManager')
 
-const getAllUsers = async (req, res, next) => {
-    res.status(200).json({ msg: "You are at the right place" });
-};
 const userSignUp = async (req, res, next) => {
     try {
         const { username, password, phoneNumber } = req.body;
@@ -64,5 +61,22 @@ const userLogIn = async (req, res, next) => {
         return res.status(500).json({ message: "Internal server error", cause: err.message });
     }
 };
+const logout = (req, res) => {
+    try {
+        // Clear the auth token cookie
+        res.clearCookie(process.env.COOKIE_NAME, {
+            path: '/',
+            httpOnly: true,
+            signed: true
+        });
 
-module.exports = { getAllUsers, userSignUp, userLogIn };
+        return res.status(200).json({ message: "Logout successful" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Internal server error", cause: err.message });
+    }
+}
+
+
+module.exports = { userSignUp, userLogIn, logout };
+
