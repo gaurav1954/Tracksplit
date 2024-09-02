@@ -1,18 +1,12 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
 const userSchema = new Schema({
     username: {
         type: String,
         required: true
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
     phoneNumber: {
-        type: String
+        type: String,
+        required: true, // Ensure phoneNumber is required
+        unique: true   // Ensure phoneNumber is unique
     },
     friends: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +24,3 @@ const userSchema = new Schema({
         default: 0
     }
 });
-
-const User = mongoose.model('User', userSchema);
-module.exports = User;

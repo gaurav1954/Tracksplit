@@ -8,17 +8,16 @@ const getAllUsers = async (req, res, next) => {
 };
 const userSignUp = async (req, res, next) => {
     try {
-        const { username, email, password, phoneNumber } = req.body;
+        const { username, password, phoneNumber } = req.body;
 
-        const existing = await User.findOne({ email });
+        const existing = await User.findOne({ phoneNumber });
         console.log(existing);
         if (existing)
-            return res.status(401).send("User with this email already exists");
+            return res.status(401).send("User with this phoneNumber already exists");
 
         const hashedPassword = await bcrypt.hash(password, 12);
         const user = new User({
             username,
-            email,
             password: hashedPassword,
             phoneNumber,
         });
@@ -35,9 +34,9 @@ const userSignUp = async (req, res, next) => {
 
 const userLogIn = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { phoneNumber, password } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ phoneNumber });
         if (!user) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
@@ -47,7 +46,7 @@ const userLogIn = async (req, res, next) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        const token = createToken(user._id.toString(), email, "7d");
+        const token = createToken(phoneNumber, "7d");
         const expires = new Date();
         expires.setDate(expires.getDate() + 7);
 
