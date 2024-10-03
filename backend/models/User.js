@@ -29,7 +29,11 @@ const userSchema = new Schema({
     debts: {
         type: Object,
         default: {}
-    }
+    },
+    expenses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Expense'
+    }]
 });
 
 const User = mongoose.model('User', userSchema);

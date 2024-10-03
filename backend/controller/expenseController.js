@@ -31,6 +31,10 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
         // Save the new expense
         await expense.save();
 
+        // Push the expense ID to the payer's and friend's expenses
+        payer.expenses.push(expense._id);
+        friend.expenses.push(expense._id);
+
         // Update balances
         payer.balance += splitAmount; // Payer receives this amount
         friend.balance -= splitAmount; // Friend owes this amount
@@ -86,12 +90,15 @@ exports.splitGroupExpense = async (req, res) => {
             amount: totalAmount,
             category,
             paidBy: payer._id,
-            group: group._id,
+            group: group._id, // Associate with the group
             splitBetween: group.members.map(member => member._id), // All group members
         });
 
         // Save the new expense
         await expense.save();
+
+        // Push the expense ID to the payer's expenses
+        payer.expenses.push(expense._id); // Use `_id` to refer to the saved expense
 
         // Update balances and debts for each member in the group
         for (const member of group.members) {
@@ -105,6 +112,9 @@ exports.splitGroupExpense = async (req, res) => {
 
                 // Update this member's debts for the payer
                 member.debts[payer._id] = (member.debts[payer._id] || 0) - splitAmount;
+
+                // Push the expense ID to the friend's expenses as well
+                member.expenses.push(expense._id);
             }
 
             // Save the updated user data for each member
@@ -113,6 +123,10 @@ exports.splitGroupExpense = async (req, res) => {
 
         // Save the updated payer data
         await payer.save();
+
+        // Push the expense ID to the group's expenses array (assuming Group model has an expenses array)
+        group.expenses.push(expense._id);
+        await group.save(); // Save the updated group data
 
         return res.status(200).json({
             message: `Expense of ${totalAmount} split among group members successfully`,
@@ -127,5 +141,6 @@ exports.splitGroupExpense = async (req, res) => {
         return res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 

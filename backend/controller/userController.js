@@ -2,8 +2,6 @@
 const User = require('../models/User');
 const Group = require('../models/Group');
 
-const User = require('../models/User');
-const Group = require('../models/Group');
 
 // Get current user info along with friends and groups
 exports.getUserDetails = async (req, res) => {
