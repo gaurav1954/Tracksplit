@@ -2,6 +2,36 @@
 const User = require('../models/User');
 const Group = require('../models/Group');
 
+const User = require('../models/User');
+const Group = require('../models/Group');
+
+// Get current user info along with friends and groups
+exports.getUserDetails = async (req, res) => {
+    try {
+        const userPhoneNumber = res.locals.jwtData.phoneNumber;
+
+        // Fetch user and populate their friends
+        const user = await User.findOne({ phoneNumber: userPhoneNumber })
+            .populate('friends', 'username email phoneNumber avatar');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Fetch groups where the user is a member
+        const groups = await Group.find({ members: userPhoneNumber });
+
+        return res.status(200).json({
+            message: 'User details fetched successfully',
+            user,
+            friends: user.friends,
+            groups
+        });
+    } catch (err) {
+        return res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 // Add a friend to a user
 exports.addFriend = async (req, res) => {
     try {
@@ -48,36 +78,4 @@ exports.createGroup = async (req, res) => {
     }
 };
 
-exports.getFriends = async (req, res) => {
-    try {
-        const userPhoneNumber = res.locals.jwtData.phoneNumber;
 
-        // Fetch user and populate their friends
-        const user = await User.findOne({ phoneNumber: userPhoneNumber }).populate('friends', 'username email phoneNumber avatar');
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        return res.status(200).json({ message: 'Friends list fetched successfully', friends: user.friends });
-    } catch (err) {
-        return res.status(500).json({ message: 'Server error', error: err.message });
-    }
-};
-
-exports.getGroups = async (req, res) => {
-    try {
-        const userPhoneNumber = res.locals.jwtData.phoneNumber;
-
-        // Fetch groups where the user is a member
-        const groups = await Group.find({ members: userPhoneNumber });
-
-        if (!groups || groups.length === 0) {
-            return res.status(404).json({ message: 'No groups found' });
-        }
-
-        return res.status(200).json({ message: 'Groups list fetched successfully', groups });
-    } catch (err) {
-        return res.status(500).json({ message: 'Server error', error: err.message });
-    }
-};
