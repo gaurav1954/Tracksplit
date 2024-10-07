@@ -13,7 +13,7 @@ const app = express();
 app.use(morgan('dev')); // for logs in dev environment
 app.use(express.json()); // for parsing application/json
 app.use(cookieParser(process.env.COOKIE_SECRET)); // for parsing cookies
-app.use('/api/v1', appRouter); // routing
+app.use('/api/', appRouter); // routing
 
 // Mongoose connection
 mongoose.connect(process.env.MONGODB_URI, {

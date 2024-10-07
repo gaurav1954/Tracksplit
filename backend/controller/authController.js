@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { createToken } = require('../utils/tokenManager')
 
-const userSignUp = async (req, res, next) => {
+const userSignUp = async (req, res) => {
     try {
         const { username, password, phoneNumber } = req.body;
 

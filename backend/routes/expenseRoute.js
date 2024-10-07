@@ -1,5 +1,5 @@
 const express = require('express');
-const { splitGroupExpense, splitExpenseBetweenFriends } = require('../controllers/expenseController');
+const { splitGroupExpense, splitExpenseBetweenFriends } = require('../controller/expenseController');
 
 const router = express.Router();
 
