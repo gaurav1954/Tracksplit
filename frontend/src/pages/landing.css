@@ -1,0 +1,49 @@
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+/* Top Navbar */
+.top-navbar {
+    background-color: #00796b;
+    color: white;
+    text-align: center;
+}
+
+.navbar-title {
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* Welcome Section */
+.welcome-section {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Bottom Navbar */
+.bottom-navbar {
+    background-color: #00796b;
+    display: flex;
+    justify-content: space-around;
+}
+
+.nav-links {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    /* Adds equal space between icons */
+}
+
+.nav-button {
+    flex-grow: 1;
+    /* Ensures buttons take equal width */
+    padding: 10px;
+    text-align: center;
+}

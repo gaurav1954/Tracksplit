@@ -1,0 +1,107 @@
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Create Group Page Styles */
+.create-group-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow-x: hidden;
+    /* Ensure no horizontal scroll */
+}
+
+.create-group-container {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #fff;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.create-group-container .MuiTextField-root {
+    margin-bottom: 20px;
+}
+
+.create-group-container button {
+    margin-top: 20px;
+}
+
+.bottom-navbar {
+    background-color: #1976d2;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 60px;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.nav-button {
+    flex: 1;
+    text-align: center;
+}
+
+/* Mobile Specific Styles */
+@media (max-width: 600px) {
+    body {
+        overflow-y: auto;
+        /* Allow vertical scrolling if needed */
+    }
+
+    .create-group-page {
+        justify-content: flex-start;
+        /* Start content from the top */
+        padding-top: 20px;
+    }
+
+    .create-group-container {
+        padding: 10px;
+        box-shadow: none;
+        /* Simplify for smaller screens */
+        max-width: 100%;
+        margin: 0 16px;
+        /* Center the container */
+    }
+
+    .bottom-navbar {
+        height: 56px;
+    }
+
+    .nav-links {
+        padding: 5px 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .bottom-navbar {
+        display: none;
+    }
+}

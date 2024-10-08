@@ -1,0 +1,38 @@
+body {
+    background-color: #f0f2f5;
+    /* Set a background color */
+    font-family: 'Roboto', sans-serif;
+}
+
+.container {
+    padding: 0 16px;
+    /* Add some padding to prevent edges from touching the screen */
+}
+
+.signup-header {
+    font-weight: 700;
+    color: #3f3d56;
+    margin-bottom: 16px;
+}
+
+.signup-form {
+    width: 100%;
+}
+
+.text-field {
+    margin-bottom: 16px;
+}
+
+.signup-button {
+    background-color: #6a1b9a;
+    color: white;
+    margin-top: 16px;
+}
+
+.signup-button:hover {
+    background-color: #5a1480;
+}
+
+.login-link {
+    margin-top: 16px;
+}

@@ -1,0 +1,61 @@
+/* Prevent horizontal scrolling */
+body {
+    overflow-x: hidden;
+    /* Prevent horizontal overflow */
+    margin: 0;
+    /* Remove default margin */
+    padding: 0;
+    /* Remove default padding */
+    box-sizing: border-box;
+    /* Set box-sizing for all elements */
+}
+
+/* Make sure all elements follow the box-sizing rule */
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+.add-expense-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center items horizontally */
+    justify-content: center;
+    /* Center items vertically */
+    height: 100vh;
+    /* Full height of the viewport */
+    width: 100vw;
+    /* Full width of the viewport */
+}
+
+.add-expense-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center items horizontally */
+    justify-content: center;
+    /* Center items vertically */
+    width: 90%;
+    /* Full width but allow some margin */
+    max-width: 400px;
+    /* Limit the width of the form */
+    padding: 20px;
+    /* Add padding for spacing */
+    margin: 0 auto;
+    /* Center the container horizontally */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Optional: Add shadow for depth */
+    border-radius: 8px;
+    /* Optional: Add border-radius for rounded corners */
+}
+
+@media (max-width: 600px) {
+    .add-expense-container {
+        padding: 10px;
+        /* Reduce padding for smaller screens */
+        width: 95%;
+        /* Use more width on smaller screens */
+    }
+}
