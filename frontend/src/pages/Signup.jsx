@@ -2,23 +2,57 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import './signup.css';
+import axios from "axios";
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Signup = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [credentials, setCredentials] = useState({
+    username: '',
+    phoneNumber: '',
+    password: ''
+  });
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleSignup = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
+    const { username, phoneNumber, password } = credentials;
 
-    console.log('Signup successful:', { email, password });
-    navigate('/login');
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+
+      const response = await axios.post(`${apiUrl}/auth/signup`, {
+        username,
+        phoneNumber,
+        password
+      });
+
+      if (response.status === 200) {
+        console.log('Signup successful');
+        navigate('/login');
+      } else {
+        console.error('Signup failed');
+      }
+    } catch (error) {
+      console.error('Error during signup:', error.response ? error.response.data : error.message);
+    }
+  };
+
+  const handleChange = (e) => {
+    setCredentials({
+      ...credentials,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
@@ -29,35 +63,53 @@ const Signup = () => {
         </Typography>
         <form onSubmit={handleSignup} className="signup-form">
           <TextField
-            label="Email"
-            type="email"
+            label="Username"
+            type="text"
+            name="username"
             fullWidth
             margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={credentials.username}
+            onChange={handleChange}
             required
             className="text-field"
           />
           <TextField
-            label="Password"
-            type="password"
+            label="Phone Number"
+            type="tel"
+            name="phoneNumber"
             fullWidth
             margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={credentials.phoneNumber}
+            onChange={handleChange}
             required
             className="text-field"
           />
-          <TextField
-            label="Confirm Password"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="text-field"
-          />
+
+          {/* Password field with visibility toggle */}
+          <FormControl fullWidth variant="outlined" margin="normal" className="text-field">
+            <InputLabel htmlFor="outlined-adornment-password">Password*</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
+              required
+            />
+          </FormControl>
+
           <Button variant="contained" color="primary" type="submit" fullWidth className="signup-button">
             Signup
           </Button>

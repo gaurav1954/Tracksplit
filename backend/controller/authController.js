@@ -21,7 +21,7 @@ const userSignUp = async (req, res) => {
 
         await user.save();
         return res
-            .status(201)
+            .status(200)
             .json({ message: "Signup successful", id: user._id.toString() });
     } catch (err) {
         console.log(err);
@@ -42,6 +42,8 @@ const userLogIn = async (req, res, next) => {
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
+        // Clear the auth_token cookie
+        console.log(process.env.COOKIE_NAME)
 
         const token = createToken(phoneNumber, "7d");
         const expires = new Date();
@@ -49,10 +51,12 @@ const userLogIn = async (req, res, next) => {
 
         // Set the new auth_token cookie
         res.cookie(process.env.COOKIE_NAME, token, {
-            httpOnly: true,
             signed: true,
             path: "/",
             expires,
+            secure: process.env.NODE_ENV === 'production', // Set secure to true in production
+            httpOnly: true, // Prevents JavaScript from accessing the cookie
+            sameSite: 'None' // Needed if you're sending cookies in cross-origin requests
         });
 
         return res.status(200).json({ message: "Login successful" });
