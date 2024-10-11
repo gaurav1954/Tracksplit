@@ -67,7 +67,7 @@ const LandingPage = () => {
             to="/friends"
             className="nav-button"
             style={{
-              color: location.pathname === '/friends' ? 'green' : 'inherit',
+              color: location.pathname === '/friends' ? 'yellow' : 'inherit',
             }}
           >
             <EmojiPeopleIcon />
@@ -78,7 +78,7 @@ const LandingPage = () => {
             to="/group"
             className="nav-button"
             style={{
-              color: location.pathname === '/group' ? 'green' : 'inherit',
+              color: location.pathname === '/group' ? 'yellow' : 'inherit',
             }}
           >
             <GroupIcon />
@@ -97,7 +97,7 @@ const LandingPage = () => {
             to="/activity"
             className="nav-button"
             style={{
-              color: location.pathname === '/activity' ? 'green' : 'inherit',
+              color: location.pathname === '/activity' ? 'yellow' : 'inherit',
             }}
           >
             <ListAltIcon />
@@ -108,7 +108,7 @@ const LandingPage = () => {
             to="/profile"
             className="nav-button"
             style={{
-              color: location.pathname === '/profile' ? 'green' : 'inherit',
+              color: location.pathname === '/profile' ? 'yellow' : 'inherit',
             }}
           >
             <AccountCircleIcon />
