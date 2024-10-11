@@ -29,9 +29,7 @@ const Signup = () => {
     const { username, phoneNumber, password } = credentials;
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-
-      const response = await axios.post(`${apiUrl}/auth/signup`, {
+      const response = await axios.post(`/auth/signup`, {
         username,
         phoneNumber,
         password

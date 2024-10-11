@@ -17,11 +17,9 @@ const corsOptions = {
 };
 
 app.use(morgan('dev')); // for logs in dev environment
-app.use(express.json()); // for parsing application/json
-app.use(cookieParser(process.env.COOKIE_SECRET)); // for parsing cookies
-
-// Enable CORS for all origins
-app.use(cors(corsOptions));
+app.use(express.json()); // for parsing application/json 
+app.use(cors(corsOptions)); // Enable CORS for all origins
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 app.use('/api', appRouter); // routing
 

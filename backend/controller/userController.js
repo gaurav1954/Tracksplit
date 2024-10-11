@@ -17,7 +17,7 @@ exports.getUserDetails = async (req, res) => {
         }
 
         // Fetch groups where the user is a member
-        const groups = await Group.find({ members: userPhoneNumber });
+        const groups = await Group.find({ members: user._id }).populate('expenses');
 
         return res.status(200).json({
             message: 'User details fetched successfully',
@@ -29,6 +29,7 @@ exports.getUserDetails = async (req, res) => {
         return res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+
 
 // Add a friend to a user
 exports.addFriend = async (req, res) => {

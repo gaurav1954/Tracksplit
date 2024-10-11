@@ -38,29 +38,17 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
-
     try {
       // Step 1: Login call
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/login`,
+      const response = await axios.post(`/auth/login`,
         credentials // Send credentials object (phoneNumber, password)
       );
 
       // Step 2: Dispatch login action to update isAuthenticated
       dispatch(login());
 
-      // Store token in localStorage or sessionStorage for future requests
-      localStorage.setItem("token", response.data.token);
-
       // Step 3: Fetch user details, friends, and groups
-      const userDetailsResponse = await axios.get(
-        `${process.env.REACT_APP_API_URL}/user/details`,
-        {
-          headers: {
-            Authorization: `Bearer ${response.data.token}`, // Include token in headers
-          },
-        }
-      );
+      const userDetailsResponse = await axios.get(`/user/userInfo`);
 
       // Step 4: Dispatch user details to Redux store
       dispatch(setUser(userDetailsResponse.data.user));

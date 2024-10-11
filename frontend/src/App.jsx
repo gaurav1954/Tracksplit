@@ -18,6 +18,7 @@ function AppRoutes() {
       <Route path="/" element={isAuthenticated ? <LandingPage /> : <Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/landing" element={<LandingPage />} />
       <Route path="/friends" element={isAuthenticated ? <FriendsPage /> : <Navigate to="/login" />} />
       <Route path="/group" element={isAuthenticated ? <CreateGroup /> : <Navigate to="/login" />} />
       <Route path="/add-expense" element={isAuthenticated ? <AddExpense /> : <Navigate to="/login" />} />
