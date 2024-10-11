@@ -1,13 +1,9 @@
 /* Prevent horizontal scrolling */
 body {
     overflow-x: hidden;
-    /* Prevent horizontal overflow */
     margin: 0;
-    /* Remove default margin */
     padding: 0;
-    /* Remove default padding */
     box-sizing: border-box;
-    /* Set box-sizing for all elements */
 }
 
 /* Make sure all elements follow the box-sizing rule */
@@ -21,41 +17,53 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Center items horizontally */
     justify-content: center;
-    /* Center items vertically */
     height: 100vh;
-    /* Full height of the viewport */
     width: 100vw;
-    /* Full width of the viewport */
+    padding: 10px;
+    /* Use a max-width to prevent overflow on large screens */
+    max-width: 100%;
 }
 
 .add-expense-container {
+    background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Center items horizontally */
     justify-content: center;
-    /* Center items vertically */
     width: 90%;
-    /* Full width but allow some margin */
     max-width: 400px;
-    /* Limit the width of the form */
     padding: 20px;
-    /* Add padding for spacing */
     margin: 0 auto;
-    /* Center the container horizontally */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    /* Optional: Add shadow for depth */
     border-radius: 8px;
-    /* Optional: Add border-radius for rounded corners */
 }
 
+/* Mobile-specific styles */
 @media (max-width: 600px) {
     .add-expense-container {
-        padding: 10px;
-        /* Reduce padding for smaller screens */
+        padding: 15px;
         width: 95%;
-        /* Use more width on smaller screens */
+    }
+
+    .add-expense-page {
+        padding: 0;
+    }
+
+    .add-expense-container h4 {
+        font-size: 1.5rem;
+    }
+
+    .add-expense-container button {
+        padding: 10px;
+    }
+
+    .add-expense-container input {
+        font-size: 1rem;
+    }
+
+    .nav-button {
+        min-width: 60px;
+        padding: 8px;
     }
 }
