@@ -52,8 +52,10 @@ const Login = () => {
 
       // Step 4: Dispatch user details to Redux store
       dispatch(setUser(userDetailsResponse.data.user));
-      dispatch(setFriends(userDetailsResponse.data.friends));
+      dispatch(setFriends(userDetailsResponse.data.user.friends));
       dispatch(setGroups(userDetailsResponse.data.groups));
+
+      console.log(userDetailsResponse);
 
       // Redirect to landing page after successful login
       navigate("/landing");

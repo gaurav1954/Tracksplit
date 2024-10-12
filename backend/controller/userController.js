@@ -22,7 +22,6 @@ exports.getUserDetails = async (req, res) => {
         return res.status(200).json({
             message: 'User details fetched successfully',
             user,
-            friends: user.friends,
             groups
         });
     } catch (err) {
