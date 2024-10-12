@@ -10,7 +10,7 @@ exports.getUserDetails = async (req, res) => {
 
         // Fetch user and populate their friends
         const user = await User.findOne({ phoneNumber: userPhoneNumber })
-            .populate('friends', 'username email phoneNumber avatar');
+            .populate('friends', 'username  phoneNumber ');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -33,11 +33,12 @@ exports.getUserDetails = async (req, res) => {
 // Add a friend to a user
 exports.addFriend = async (req, res) => {
     try {
-        const { friendPhoneNumber } = req.body;
+        const { phoneNumber } = req.body;
         const userPhoneNumber = res.locals.jwtData.phoneNumber;
 
         const user = await User.findOne({ phoneNumber: userPhoneNumber });
-        const friend = await User.findOne({ phoneNumber: friendPhoneNumber });
+        const friend = await User.findOne({ phoneNumber });
+
 
         if (!user || !friend) {
             return res.status(404).json({ message: 'User or friend not found' });
@@ -46,6 +47,10 @@ exports.addFriend = async (req, res) => {
         // Add friend to user's friends list if not already added
         if (!user.friends.includes(friend._id)) {
             user.friends.push(friend._id);
+
+            if (!user.debts[friend._id]) {
+                user.debts[friend._id] = 0;
+            }
             await user.save();
         }
 

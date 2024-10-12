@@ -6,7 +6,7 @@ const { verifyToken } = require('../utils/tokenManager');
 router.use(verifyToken);
 
 router.get('/userInfo', getUserDetails);
-router.post('/addFriends', addFriend);
-router.post('/groups', createGroup);
+router.post('/addFriend', addFriend);
+router.post('/createGroup', createGroup);
 
 module.exports = router;

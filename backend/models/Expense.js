@@ -18,7 +18,6 @@ const expenseSchema = new Schema({
     group: {
         type: Schema.Types.ObjectId,
         ref: 'Group',
-        required: true
     },
     paidBy: {
         type: Schema.Types.ObjectId,

@@ -5,12 +5,12 @@ const Expense = require('../models/Expense');
 
 exports.splitExpenseBetweenFriends = async (req, res) => {
     try {
-        const { friendId, totalAmount, description, category } = req.body;
+        const { phoneNumber, totalAmount, description, category } = req.body;
         const payerPhoneNumber = res.locals.jwtData.phoneNumber; // Using phone number from JWT data
 
         // Ensure both users exist
         const payer = await User.findOne({ phoneNumber: payerPhoneNumber });
-        const friend = await User.findById(friendId);
+        const friend = await User.findOne({ phoneNumber });
 
         if (!payer || !friend) {
             return res.status(404).json({ message: 'Both payer and friend must exist.' });
@@ -39,9 +39,13 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
         payer.balance += splitAmount; // Payer receives this amount
         friend.balance -= splitAmount; // Friend owes this amount
 
-        // Update debts
-        payer.debts[friendId] = (payer.debts[friendId] || 0) + splitAmount;
+        // Ensure debts are initialized before updating
+        payer.debts[friend._id] = (payer.debts[friend._id] || 0) + splitAmount;
         friend.debts[payer._id] = (friend.debts[payer._id] || 0) - splitAmount;
+
+        // Mark the debts as modified to ensure Mongoose saves them
+        payer.markModified('debts');
+        friend.markModified('debts');
 
         // Save the updated user data
         await payer.save();
@@ -61,6 +65,7 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
         return res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 
 exports.splitGroupExpense = async (req, res) => {
