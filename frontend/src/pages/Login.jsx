@@ -58,7 +58,7 @@ const Login = () => {
       console.log(userDetailsResponse);
 
       // Redirect to landing page after successful login
-      navigate("/Friends");
+      navigate("/friends");
     } catch (error) {
       if (error.response) {
         setError(error.response.data.message);
