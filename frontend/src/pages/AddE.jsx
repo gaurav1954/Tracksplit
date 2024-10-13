@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Typography, AppBar, Toolbar, Box } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
-import GroupIcon from '@mui/icons-material/Group';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import AddIcon from '@mui/icons-material/Add';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Navbar from '../components/Navbar';
 import './adde.css'; // Custom CSS for styling
 
 const AddExpense = () => {
@@ -106,7 +102,7 @@ const AddExpense = () => {
             Add Expense
           </Button>
         </Box>
-        
+
         {/* Display the list of expenses */}
         <Box mt={3}>
           <Typography variant="h5" gutterBottom>
@@ -127,90 +123,8 @@ const AddExpense = () => {
           )}
         </Box>
       </Container>
-      
-      <AppBar position="fixed" className="bottom-navbar" style={{ top: 'auto', bottom: 0 }}>
-        <Toolbar className="nav-links">
-          <Button
-            color="inherit"
-            component={Link}
-            to="/friends"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/friends' ? 'yellow' : 'inherit',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <EmojiPeopleIcon />
-            <Typography variant="caption">Friends</Typography>
-          </Button>
 
-          <Button
-            color="inherit"
-            component={Link}
-            to="/group"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/group' ? 'yellow' : 'inherit',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <GroupIcon />
-            <Typography variant="caption">Group</Typography>
-          </Button>
-
-          <Button
-            color="inherit"
-            component={Link}
-            to="/add-expense"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/add-expense' ? 'yellow' : 'inherit',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <AddIcon />
-            <Typography variant="caption">Add Expense</Typography>
-          </Button>
-
-          <Button
-            color="inherit"
-            component={Link}
-            to="/activity"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/activity' ? 'yellow' : 'inherit',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <ListAltIcon />
-            <Typography variant="caption">Activity</Typography>
-          </Button>
-
-          <Button
-            color="inherit"
-            component={Link}
-            to="/profile"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/profile' ? 'yellow' : 'inherit',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <AccountCircleIcon />
-            <Typography variant="caption">Profile</Typography>
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <Navbar></Navbar>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Provider, useSelector } from 'react-redux';
+import { store, persistor } from './Store';
+import { PersistGate } from 'redux-persist/integration/react'; // Import PersistGate
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import store from './Store'; // Import your Redux store
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import LandingPage from './pages/Landing';
@@ -28,10 +29,12 @@ function AppRoutes() {
 
 function App() {
   return (
-    <Provider store={store}> {/* Provide the Redux store */}
-      <Router>
-        <AppRoutes />
-      </Router>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}> {/* Add PersistGate */}
+        <Router>
+          <AppRoutes />
+        </Router>
+      </PersistGate>
     </Provider>
   );
 }

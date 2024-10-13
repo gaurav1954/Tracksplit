@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { AppBar, Toolbar, Button, Typography, Snackbar } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom'; // Import useLocation
-import GroupIcon from '@mui/icons-material/Group'; // For Groups
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople'; // For Friends
-import ListAltIcon from '@mui/icons-material/ListAlt'; // For Activity
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // For Profile
-import AddIcon from '@mui/icons-material/Add'; // For Adding Expenses
 import './landing.css';
+import Navbar from '../components/Navbar';
 
 const LandingPage = () => {
   const [open, setOpen] = useState(true); // State for Snackbar visibility
@@ -32,7 +28,7 @@ const LandingPage = () => {
 
   return (
     <div className="landing-page">
-      
+
       {/* Top Navbar for Snackbar */}
       <Snackbar
         open={open}
@@ -57,64 +53,7 @@ const LandingPage = () => {
         </Button>
       </div>
 
-      {/* Bottom Navbar with Icons */}
-      <AppBar position="fixed" className="bottom-navbar" style={{ top: 'auto', bottom: 0 }}>
-        <Toolbar className="nav-links">
-          {/* Conditionally apply green color when the current route is "/friends" */}
-          <Button
-            color="inherit"
-            component={Link}
-            to="/friends"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/friends' ? 'yellow' : 'inherit',
-            }}
-          >
-            <EmojiPeopleIcon />
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/group"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/group' ? 'yellow' : 'inherit',
-            }}
-          >
-            <GroupIcon />
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/add-expense"
-            className="nav-button"
-          >
-            <AddIcon /> {/* "+" Icon for Adding Expenses */}
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/activity"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/activity' ? 'yellow' : 'inherit',
-            }}
-          >
-            <ListAltIcon />
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/profile"
-            className="nav-button"
-            style={{
-              color: location.pathname === '/profile' ? 'yellow' : 'inherit',
-            }}
-          >
-            <AccountCircleIcon />
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <Navbar></Navbar>
     </div>
   );
 };
