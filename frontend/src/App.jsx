@@ -15,8 +15,6 @@ function AppRoutes() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   return (
     <Routes>
-      {/* Redirect the root path to login if not authenticated */}
-      <Route path="/" element={isAuthenticated ? <LandingPage /> : <Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/landing" element={<LandingPage />} />

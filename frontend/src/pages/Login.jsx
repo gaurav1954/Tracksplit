@@ -58,7 +58,7 @@ const Login = () => {
       console.log(userDetailsResponse);
 
       // Redirect to landing page after successful login
-      navigate("/landing");
+      navigate("/Friends");
     } catch (error) {
       if (error.response) {
         setError(error.response.data.message);
@@ -111,20 +111,14 @@ const Login = () => {
                 required
                 className="text-field"
               />
-              <Box display="flex" justifyContent="space-between" alignItems="center" marginY={1}>
-                <FormControlLabel control={<Checkbox color="primary" />} label="Remember Me" />
-                <Button color="primary" style={{ textTransform: "none" }}>
-                  Forgot Password?
-                </Button>
-              </Box>
               <Button variant="contained" color="primary" type="submit" fullWidth className="login-button">
                 LOGIN
               </Button>
             </form>
             <Typography align="center" variant="body2" className="signup-link">
-              New on our platform?{" "}
+              Don't have an account?{" "}
               <Link to="/signup" className="signup-link-text">
-                Create an account
+                SignUp
               </Link>
             </Typography>
           </CardContent>
