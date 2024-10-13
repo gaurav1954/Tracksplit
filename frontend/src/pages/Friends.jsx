@@ -9,11 +9,11 @@ import {
   ListItemAvatar,
   ListItemText,
   TextField,
-  AppBar,
-  Toolbar,
   IconButton,
+  Box,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import GroupIcon from '@mui/icons-material/Group';
 import { setFriends } from "../features/userSlice"; // Redux action to set friends
 import { Delete } from "@mui/icons-material";
 import axios from "axios"; // For API call
@@ -41,7 +41,7 @@ const AddFriends = () => {
     } catch (error) {
       setErrorMessage("Failed to add friend. Please try again.");
     }
-  }
+  };
 
   const handleDeleteFriend = (id) => {
     const updatedFriends = friends.filter((friend) => friend.id !== id);
@@ -55,16 +55,16 @@ const AddFriends = () => {
         {/* Friends List */}
         {friends.length > 0 ? (
           <>
-            <Typography variant="h6" style={{ marginBottom: "10px" }}>
+            <Typography style={{ marginBottom: "10px", marginTop: "10px" }}>
               Friends:
             </Typography>
             <List>
               {friends.map(({ _id, username, phoneNumber }) => (
-                <ListItem key={_id} secondaryAction={
-                  <IconButton onClick={() => handleDeleteFriend(id)}><Delete /></IconButton>
+                <ListItem key={_id} style={{ paddingLeft: "0px" }} secondaryAction={
+                  <IconButton onClick={() => handleDeleteFriend(_id)}><Delete /></IconButton>
                 }>
                   <ListItemAvatar><Avatar>{username ? username.charAt(0).toUpperCase() : ''}</Avatar></ListItemAvatar>
-                  <ListItemText primary={username} secondary={phoneNumber} />
+                  <ListItemText primary={username} />
                 </ListItem>
               ))}
             </List>
@@ -83,14 +83,18 @@ const AddFriends = () => {
           margin="normal"
           inputProps={{ maxLength: 10 }}
         />
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleAddFriend}
-        >
-          Add Friend
-        </Button>
+
+        {/* Center the Button */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<GroupIcon />}
+            onClick={handleAddFriend}
+          >
+            Add Friend
+          </Button>
+        </Box>
 
         {/* Display Error Message */}
         {errorMessage && (
@@ -100,7 +104,7 @@ const AddFriends = () => {
         )}
       </Container>
 
-      <Navbar></Navbar>
+      <Navbar />
     </div>
   );
 };
