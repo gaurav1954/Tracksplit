@@ -5,19 +5,24 @@ const Expense = require('../models/Expense');
 
 exports.splitExpenseBetweenFriends = async (req, res) => {
     try {
-        const { phoneNumber, totalAmount, description, category } = req.body;
+        const { phoneNumbers, totalAmount, description, category } = req.body; // phoneNumbers is an array
         const payerPhoneNumber = res.locals.jwtData.phoneNumber; // Using phone number from JWT data
 
-        // Ensure both users exist
-        const payer = await User.findOne({ phoneNumber: payerPhoneNumber });
-        const friend = await User.findOne({ phoneNumber });
+        // Ensure the payer exists
 
-        if (!payer || !friend) {
-            return res.status(404).json({ message: 'Both payer and friend must exist.' });
+        const payer = await User.findOne({ phoneNumber: payerPhoneNumber });
+        if (!payer) {
+            return res.status(404).json({ message: 'Payer must exist.' });
         }
 
-        // Calculate the split amount
-        const splitAmount = totalAmount / 2;
+        // Fetch all friends from the array of phoneNumbers
+        const friends = await User.find({ phoneNumber: { $in: phoneNumbers } });
+        if (friends.length !== phoneNumbers.length) {
+            return res.status(404).json({ message: 'One or more friends not found.' });
+        }
+
+        // Calculate the split amount between the payer and all friends
+        const splitAmount = totalAmount / (friends.length + 1); // +1 for the payer
 
         // Create new expense in the database
         const expense = new Expense({
@@ -25,39 +30,50 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
             amount: totalAmount,
             category,
             paidBy: payer._id,
-            splitBetween: [payer._id, friend._id],
+            splitBetween: [payer._id, ...friends.map(friend => friend._id)],
         });
 
         // Save the new expense
         await expense.save();
 
-        // Push the expense ID to the payer's and friend's expenses
+        // Update balances and debts for each friend
+        for (const friend of friends) {
+            // Update friend's balance and debts
+            friend.balance -= splitAmount; // Friend owes this amount
+            friend.debts[payer._id] = (friend.debts[payer._id] || 0) - splitAmount;
+
+            // Push the expense ID to the friend's expenses
+            friend.expenses.push(expense._id);
+
+            // Mark debts as modified for Mongoose to save the changes
+            friend.markModified('debts');
+
+            // Save the updated friend data
+            await friend.save();
+        }
+
+        // Update payer's balance and debts
+        payer.balance += splitAmount * friends.length; // Payer gets the sum of all friends' splits
+        for (const friend of friends) {
+            payer.debts[friend._id] = (payer.debts[friend._id] || 0) + splitAmount;
+        }
+
+        // Push the expense ID to the payer's expenses
         payer.expenses.push(expense._id);
-        friend.expenses.push(expense._id);
 
-        // Update balances
-        payer.balance += splitAmount; // Payer receives this amount
-        friend.balance -= splitAmount; // Friend owes this amount
-
-        // Ensure debts are initialized before updating
-        payer.debts[friend._id] = (payer.debts[friend._id] || 0) + splitAmount;
-        friend.debts[payer._id] = (friend.debts[payer._id] || 0) - splitAmount;
-
-        // Mark the debts as modified to ensure Mongoose saves them
+        // Mark the debts as modified for Mongoose to save the changes
         payer.markModified('debts');
-        friend.markModified('debts');
 
-        // Save the updated user data
+        // Save the updated payer data
         await payer.save();
-        await friend.save();
 
         return res.status(200).json({
             message: `Expense of ${totalAmount} split successfully`,
             expense,
             data: {
                 payer: payer.username,
-                friend: friend.username,
-                amountOwed: splitAmount,
+                friends: friends.map(friend => friend.username),
+                amountOwedPerFriend: splitAmount,
             },
         });
     } catch (error) {
@@ -65,6 +81,7 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
         return res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
 
 
 
