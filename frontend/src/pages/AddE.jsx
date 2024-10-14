@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Typography, Box, Select, MenuItem, InputLabel, FormControl, List, ListItem, ListItemAvatar, ListItemText, Avatar, Checkbox, FormControlLabel } from '@mui/material';
 import { useSelector } from 'react-redux';
+import axios from 'axios'; // Import Axios for making the API request
 import Navbar from '../components/Navbar';
 import { stringAvatar } from '../utils/avatarUtil';
+import { useNavigate } from 'react-router-dom'; // For navigation
+import { toast, ToastContainer } from 'react-toastify'; // Import Toast for notifications
+import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
 
 const AddExpense = () => {
   const [amount, setAmount] = useState('');
@@ -12,6 +16,7 @@ const AddExpense = () => {
   const [selectedFriends, setSelectedFriends] = useState([]); // State to store selected friends' phone numbers
 
   const friends = useSelector((state) => state.user.friends); // Access friends from Redux
+  const navigate = useNavigate(); // Use navigate for redirecting
 
   // Automatically set the date to the current date when the component mounts
   useEffect(() => {
@@ -20,22 +25,41 @@ const AddExpense = () => {
     document.title = "TrackSplit - Add Expense";
   }, []);
 
-  const handleAddExpense = () => {
+  const handleAddExpense = async () => {
     const newExpense = {
       amount,
       category,
       description,
       date,
-      friends: selectedFriends, // Send selected friends' phone numbers
+      phoneNumbers: selectedFriends, // Send selected friends' phone numbers
     };
 
-    console.log(newExpense);
+    try {
+      // Make the API request to split expenses among friends
+      const response = await axios.post('/expense/split/friends', newExpense);
+      console.log('Expense added:', response.data);
 
-    // Clear input fields after adding the expense
-    setAmount('');
-    setCategory('');
-    setDescription('');
-    setSelectedFriends([]);
+      // Show a success toast notification
+      toast.success('Expense added successfully!', {
+        position: toast.POSITION.TOP_CENTER
+      });
+
+      // Clear input fields after adding the expense
+      setAmount('');
+      setCategory('');
+      setDescription('');
+      setSelectedFriends([]);
+
+      // Redirect to the /friends page after a short delay to allow the toast to show
+      setTimeout(() => {
+        navigate('/friends');
+      }, 2000);
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      toast.error('Failed to add expense. Please try again.', {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
   };
 
   // Handle selecting/deselecting friends
@@ -126,6 +150,7 @@ const AddExpense = () => {
         </Box>
       </Container>
 
+      <ToastContainer /> {/* Add ToastContainer for toast notifications */}
       <Navbar />
     </div>
   );

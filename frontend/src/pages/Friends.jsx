@@ -22,6 +22,8 @@ import { stringAvatar } from "../utils/avatarUtil"; // Importing the utility fun
 const AddFriends = () => {
   const dispatch = useDispatch();
   const friends = useSelector((state) => state.user.friends);
+  const debts = useSelector((state) => state.user.user.debts);
+  const balance = useSelector((state) => state.user.user.balance); // Access balance from Redux
   const [phoneNumber, setPhoneNumber] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -52,7 +54,6 @@ const AddFriends = () => {
       sx={{
         paddingLeft: "15px",
         paddingRight: "15px",
-        paddingTop: "16px", // Add some top padding if needed
       }}
     >
       <Box
@@ -98,12 +99,36 @@ const AddFriends = () => {
         </Typography>
       )}
 
-      {/* Friends List */}
+      {balance < 0 ? (
+        <Typography
+          variant="h6"
+          sx={{ marginBottom: "16px", color: "black" }}
+        >
+          Overall you owe{" "}
+          <span style={{ color: "orange" }}>
+            {Math.abs(balance).toFixed(2)}
+          </span>
+
+        </Typography>
+      ) : (
+        <Typography
+          variant="h6"
+          sx={{ marginBottom: "16px", color: "black" }}
+        >
+          You are owed{" "}
+          <span style={{ color: "green" }}>
+            {balance.toFixed(2)}
+          </span>
+
+        </Typography>
+      )}
+
+
       <Container
         maxWidth="xs"
         className="add-friend-container"
         sx={{
-          paddingLeft: "0px"
+          paddingLeft: "0px",
         }}
       >
         {friends.length > 0 ? (
@@ -112,13 +137,17 @@ const AddFriends = () => {
               <ListItem
                 key={_id}
                 sx={{
-                  paddingLeft: "0px"
+                  paddingLeft: "0px",
                 }}
+                secondaryAction={
+                  <ListItemText primary={debts[_id]} />
+                }
               >
                 <ListItemAvatar>
                   <Avatar variant="rounded" {...stringAvatar(username)} />
                 </ListItemAvatar>
                 <ListItemText primary={username} />
+
               </ListItem>
             ))}
           </List>

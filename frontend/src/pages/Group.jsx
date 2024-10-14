@@ -1,112 +1,155 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useRef } from "react";
 import {
-  TextField,
   Button,
   Container,
   Typography,
+  Avatar,
   List,
   ListItem,
-  ListItemText,
   ListItemAvatar,
-  Avatar,
+  ListItemText,
+  TextField,
   IconButton,
-  Box
-} from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import GroupIcon from '@mui/icons-material/Group';
-import { setGroups } from '../features/userSlice'; // Importing setGroups action
-// import './group.css';
-import Navbar from '../components/Navbar';
-import axios from 'axios';
+  Box,
+} from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import AddIcon from "@mui/icons-material/Add";
+import GroupIcon from "@mui/icons-material/Group";
+import { setGroups } from "../features/userSlice"; // Importing setGroups action
+import axios from "axios";
+import Navbar from "../components/Navbar";
 
 const CreateGroup = () => {
   const dispatch = useDispatch();
-  const groups = useSelector((state) => state.user.groups); // Accessing groups from Redux state
-  const [groupName, setGroupName] = useState('');
+  const groups = useSelector((state) => state.user.groups);
+  const [groupName, setGroupName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Handle Create Group with API call
+  // Reference for input field to set focus
+  const inputRef = useRef(null);
+
+  // Function to create a group by name
   const handleCreateGroup = async () => {
-    if (groupName) {
-      try {
-        const response = await axios.post('/api/groups', { name: groupName });
-        const newGroup = response.data; // Assume the API returns the new group
-        dispatch(setGroups([...groups, newGroup])); // Update Redux state with the new group
-        setGroupName(''); // Clear input field after adding
-      } catch (error) {
-        console.error('Error creating group:', error);
-      }
+    try {
+      const response = await axios.post("/api/groups", { name: groupName });
+      const newGroup = response.data; // Assume the API returns the new group
+
+      dispatch(setGroups([...groups, newGroup]));
+      setGroupName("");
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage("Failed to create group. Please try again.");
     }
   };
 
-  // Handle Delete Group locally
-  const handleDeleteGroup = (id) => {
-    const updatedGroups = groups.filter((group) => group.id !== id);
-    dispatch(setGroups(updatedGroups)); // Update Redux with deleted group
+  // Handle adding group button click to focus on input field
+  const handleFocusInput = () => {
+    inputRef.current.focus(); // Focus input field on button click
   };
 
   return (
-    <div className="create-group-page">
-      <Container maxWidth="xs" className="create-group-container">
-
-        {groups.length > 0 ? (
-          <>
-            <Typography style={{ marginBottom: "10px", marginTop: "10px" }}>
-              Groups
-            </Typography>
-            <List>
-              {groups.map((group) => (
-                <ListItem
-                  key={group.id}
-                  style={{ paddingLeft: "0px" }}
-                  secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDeleteGroup(group.id)}
-                    >
-
-                    </IconButton>
-                  }
-                >
-                  <ListItemAvatar>
-                    <Avatar>
-                      <GroupIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={group.name} />
-                </ListItem>
-              ))}
-            </List>
-          </>
-        ) : (
-          <Typography variant="h5" gutterBottom>
-            No groups yet!
-          </Typography>
-        )}
-
-        {/* Input Field for New Group */}
+    <Box
+      sx={{
+        paddingLeft: "15px",
+        paddingRight: "15px",
+        paddingTop: "16px", // Add some top padding if needed
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "16px",
+        }}
+      >
         <TextField
           label="Group Name"
           variant="outlined"
-          fullWidth
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
           margin="normal"
+          sx={{
+            width: "80%",
+            borderRadius: "100px", // Rounded corners
+            marginRight: "8px", // Space between input and button
+          }}
+          ref={inputRef} // Set reference to input field for focusing
         />
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+
+        {/* Add group icon next to input */}
+        <IconButton
+          color="primary"
+          onClick={handleCreateGroup}
+          sx={{ padding: "8px" }} // Consistent padding
+        >
+          <AddIcon />
+        </IconButton>
+      </Box>
+
+      {/* Error message if any */}
+      {errorMessage && (
+        <Typography
+          variant="body2"
+          color="error"
+          gutterBottom
+        >
+          {errorMessage}
+        </Typography>
+      )}
+
+      {/* Groups List */}
+      <Container
+        maxWidth="xs"
+        className="create-group-container"
+        sx={{
+          paddingLeft: "0px"
+        }}
+      >
+        {groups.length > 0 ? (
+          <List>
+            {groups.map(({ id, name }) => (
+              <ListItem
+                key={id}
+                sx={{
+                  paddingLeft: "0px"
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar variant="rounded">
+                    <GroupIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={name} />
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Typography>No groups created yet!</Typography>
+        )}
+
+        {/* Button to show input field and make it active */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center", // Align button to the left
+            marginTop: "16px",
+          }}
+        >
           <Button
             variant="outlined"
             color="primary"
-            startIcon={<GroupIcon />}
-            onClick={handleCreateGroup}
+            startIcon={<AddIcon />}
+            onClick={handleFocusInput} // Focus input field on button click
           >
-            Start a New Group
+            Create group
           </Button>
         </Box>
       </Container>
 
+      {/* Navbar */}
       <Navbar />
-    </div>
+    </Box>
   );
 };
 

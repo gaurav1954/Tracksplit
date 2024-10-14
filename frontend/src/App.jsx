@@ -7,7 +7,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FriendsPage from './pages/Friends';
 import CreateGroup from './pages/Group';
-import AddExpense from './pages/AddE'; // Import the AddExpense component
+import AddExpense from './pages/AddE';
+import Navbar from './components/Navbar'; // Import the Navbar
+import Layout from './pages/Layout';
 
 function AppRoutes() {
   // Get authentication status from the Redux store
@@ -15,14 +17,26 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* If the user is authenticated, redirect them to FriendsPage, otherwise to Login */}
+      {/* Redirect to /friends if authenticated or /login if not */}
       <Route path="/" element={isAuthenticated ? <Navigate to="/friends" /> : <Navigate to="/login" />} />
+
+      {/* Public routes (no Navbar) */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      {/* Protected routes: Only accessible when authenticated */}
-      <Route path="/friends" element={isAuthenticated ? <FriendsPage /> : <Navigate to="/login" />} />
-      <Route path="/group" element={isAuthenticated ? <CreateGroup /> : <Navigate to="/login" />} />
-      <Route path="/add-expense" element={isAuthenticated ? <AddExpense /> : <Navigate to="/login" />} />
+
+      {/* Protected routes (with Layout) */}
+      <Route
+        path="/friends"
+        element={isAuthenticated ? <Layout><FriendsPage /></Layout> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/group"
+        element={isAuthenticated ? <Layout><CreateGroup /></Layout> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/add-expense"
+        element={isAuthenticated ? <Layout><AddExpense /></Layout> : <Navigate to="/login" />}
+      />
     </Routes>
   );
 }
@@ -30,7 +44,7 @@ function AppRoutes() {
 function App() {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}> {/* Add PersistGate */}
+      <PersistGate loading={null} persistor={persistor}>
         <Router>
           <AppRoutes />
         </Router>
