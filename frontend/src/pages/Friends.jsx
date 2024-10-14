@@ -42,11 +42,6 @@ const AddFriends = () => {
     }
   };
 
-  const handleDeleteFriend = (id) => {
-    const updatedFriends = friends.filter((friend) => friend.id !== id);
-    dispatch(setFriends(updatedFriends));
-  };
-
   // Handle adding friend button click to focus on input field
   const handleFocusInput = () => {
     inputRef.current.focus(); // Focus input field on button click
@@ -63,6 +58,7 @@ const AddFriends = () => {
       <Box
         sx={{
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "16px",
         }}
@@ -70,14 +66,12 @@ const AddFriends = () => {
         <TextField
           label="Phone Number (10 digits)"
           variant="outlined"
-          fullWidth
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
           margin="normal"
-          inputProps={{ maxLength: 10 }}
           sx={{
-            width: "75%",
-            borderRadius: "50px", // Rounded corners
+            width: "80%",
+            borderRadius: "100px", // Rounded corners
             marginRight: "8px", // Space between input and button
           }}
           ref={inputRef} // Set reference to input field for focusing

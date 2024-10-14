@@ -1,61 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Container, Typography, AppBar, Toolbar, Box } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom';
+import { TextField, Button, Container, Typography, Box, Select, MenuItem, InputLabel, FormControl, List, ListItem, ListItemAvatar, ListItemText, Avatar, Checkbox, FormControlLabel } from '@mui/material';
+import { useSelector } from 'react-redux';
 import Navbar from '../components/Navbar';
-import './adde.css'; // Custom CSS for styling
+import { stringAvatar } from '../utils/avatarUtil';
 
 const AddExpense = () => {
-  const location = useLocation(); // To detect the current route
-  const [expenseName, setExpenseName] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState(''); // New state for category
-  const [createdBy, setCreatedBy] = useState(''); // New state for created by
-  const [description, setDescription] = useState(''); // New state for description
-  const [date, setDate] = useState(''); // New state for date
-  const [expenses, setExpenses] = useState([]); // State for storing expenses
+  const [category, setCategory] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
+  const [selectedFriends, setSelectedFriends] = useState([]); // State to store selected friends' phone numbers
 
-  // Set the document title when this component is mounted
+  const friends = useSelector((state) => state.user.friends); // Access friends from Redux
+
+  // Automatically set the date to the current date when the component mounts
   useEffect(() => {
+    const currentDate = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
+    setDate(currentDate);
     document.title = "TrackSplit - Add Expense";
   }, []);
 
   const handleAddExpense = () => {
-    // Create a new expense object
     const newExpense = {
-      expenseName,
       amount,
       category,
-      createdBy,
       description,
       date,
+      friends: selectedFriends, // Send selected friends' phone numbers
     };
 
-    // Add the new expense to the list of expenses
-    setExpenses([...expenses, newExpense]);
+    console.log(newExpense);
 
     // Clear input fields after adding the expense
-    setExpenseName('');
     setAmount('');
     setCategory('');
-    setCreatedBy('');
     setDescription('');
-    setDate('');
+    setSelectedFriends([]);
+  };
+
+  // Handle selecting/deselecting friends
+  const handleSelectFriend = (phoneNumber) => {
+    setSelectedFriends((prevSelectedFriends) =>
+      prevSelectedFriends.includes(phoneNumber)
+        ? prevSelectedFriends.filter((num) => num !== phoneNumber) // Deselect
+        : [...prevSelectedFriends, phoneNumber] // Select
+    );
   };
 
   return (
     <div className="add-expense-page">
       <Container maxWidth="sm" className="add-expense-container">
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h6" gutterBottom>
           Add an Expense
         </Typography>
         <Box component="form" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <TextField
-            label="Expense Name"
-            fullWidth
-            value={expenseName}
-            onChange={(e) => setExpenseName(e.target.value)}
-            margin="normal"
-          />
           <TextField
             label="Amount"
             fullWidth
@@ -64,67 +62,71 @@ const AddExpense = () => {
             margin="normal"
             type="number"
           />
-          <TextField
-            label="Category"
-            fullWidth
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            label="Created By"
-            fullWidth
-            value={createdBy}
-            onChange={(e) => setCreatedBy(e.target.value)}
-            margin="normal"
-          />
+
+          {/* Dropdown for Category */}
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="category-label">Category</InputLabel>
+            <Select
+              labelId="category-label"
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              label="Category"
+            >
+              <MenuItem value="food">Food</MenuItem>
+              <MenuItem value="drinks">Drinks</MenuItem>
+              <MenuItem value="fuel">Fuel</MenuItem>
+              <MenuItem value="entertainment">Entertainment</MenuItem>
+              <MenuItem value="groceries">Groceries</MenuItem>
+              <MenuItem value="travel">Travel</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
+            </Select>
+          </FormControl>
+
           <TextField
             label="Description"
             fullWidth
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             margin="normal"
-            multiline // Allows for multiple lines in the description field
-            rows={3} // Set the number of visible rows
+            multiline
+            rows={3}
           />
-          <TextField
-            label="Date"
-            fullWidth
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            margin="normal"
-            type="date" // Set input type to date
-            InputLabelProps={{
-              shrink: true, // Keeps the label shrunk when a date is selected
-            }}
-          />
-          <Button variant="contained" color="primary" onClick={handleAddExpense} fullWidth>
+
+          {/* Friends List with Checkboxes */}
+          {friends.length > 0 ? (
+            <Box sx={{ marginTop: '16px', width: '100%' }}>
+              <Typography variant="h6">Select Friends</Typography>
+              <List>
+                {friends.map(({ _id, username, phoneNumber }) => (
+                  <ListItem key={_id} sx={{ paddingLeft: "0px" }}>
+                    <ListItemAvatar>
+                      <Avatar variant="rounded" {...stringAvatar(username)} />
+                    </ListItemAvatar>
+                    <ListItemText primary={username} />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={selectedFriends.includes(phoneNumber)}
+                          onChange={() => handleSelectFriend(phoneNumber)}
+                        />
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          ) : (
+            <Typography>No friends available to split the expense with.</Typography>
+          )}
+
+          <Button variant="outlined" color="primary" onClick={handleAddExpense} sx={{ marginTop: '16px' }}>
             Add Expense
           </Button>
         </Box>
-
-        {/* Display the list of expenses */}
-        <Box mt={3}>
-          <Typography variant="h5" gutterBottom>
-            Expense List
-          </Typography>
-          {expenses.length === 0 ? (
-            <Typography variant="body1">No expenses added yet.</Typography>
-          ) : (
-            <ul>
-              {expenses.map((expense, index) => (
-                <li key={index}>
-                  <Typography variant="body1">
-                    {expense.expenseName} - ${expense.amount} | Category: {expense.category} | Created By: {expense.createdBy} | Description: {expense.description} | Date: {expense.date}
-                  </Typography>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Box>
       </Container>
 
-      <Navbar></Navbar>
+      <Navbar />
     </div>
   );
 };
