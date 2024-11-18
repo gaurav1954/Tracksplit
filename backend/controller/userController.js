@@ -34,6 +34,7 @@ exports.getUserDetails = async (req, res) => {
 
 
 // Add a friend to a user
+// controllers/userController.js
 exports.addFriend = async (req, res) => {
     try {
         const { phoneNumber } = req.body;
@@ -52,9 +53,13 @@ exports.addFriend = async (req, res) => {
             user.friends.push(friend._id);
 
             // Initialize debt if not already present
-            if (!user.debts[friend._id]) {
-                user.debts[friend._id] = 0;
+            if (!user.debts[friend._id.toString()]) {
+                user.debts[friend._id] = 0;  // Add debt field for friend
             }
+
+            // Explicitly mark the debts field as modified
+            user.markModified('debts');
+
             await user.save();
         }
 
@@ -63,9 +68,13 @@ exports.addFriend = async (req, res) => {
             friend.friends.push(user._id);
 
             // Initialize debt if not already present
-            if (!friend.debts[user._id]) {
-                friend.debts[user._id] = 0;
+            if (!friend.debts[user._id.toString()]) {
+                friend.debts[user._id] = 0;  // Add debt field for user
             }
+
+            // Explicitly mark the debts field as modified
+            friend.markModified('debts');
+
             await friend.save();
         }
 
@@ -82,6 +91,7 @@ exports.addFriend = async (req, res) => {
         return res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+
 
 
 

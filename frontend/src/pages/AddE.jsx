@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { TextField, Button, Container, Typography, Box, Select, MenuItem, InputLabel, FormControl, List, ListItem, ListItemAvatar, ListItemText, Avatar, Checkbox, FormControlLabel } from '@mui/material';
-import { useSelector } from 'react-redux';
-import axios from 'axios'; // Import Axios for making the API request
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { stringAvatar } from '../utils/avatarUtil';
-import { useNavigate } from 'react-router-dom'; // For navigation
-import { toast, ToastContainer } from 'react-toastify'; // Import Toast for notifications
-import 'react-toastify/dist/ReactToastify.css'; // Toastify CSS
+import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { setUser } from '../features/userSlice'; // Import setUser action from userSlice
 
 const AddExpense = () => {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
-  const [selectedFriends, setSelectedFriends] = useState([]); // State to store selected friends' phone numbers
+  const [selectedFriends, setSelectedFriends] = useState([]);
 
-  const friends = useSelector((state) => state.user.friends); // Access friends from Redux
-  const navigate = useNavigate(); // Use navigate for redirecting
+  const friends = useSelector((state) => state.user.friends);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Automatically set the date to the current date when the component mounts
   useEffect(() => {
-    const currentDate = new Date().toISOString().slice(0, 10); // Format as YYYY-MM-DD
+    const currentDate = new Date().toISOString().slice(0, 10);
     setDate(currentDate);
     document.title = "TrackSplit - Add Expense";
   }, []);
@@ -31,43 +32,43 @@ const AddExpense = () => {
       category,
       description,
       date,
-      phoneNumbers: selectedFriends, // Send selected friends' phone numbers
+      phoneNumbers: selectedFriends,
     };
 
     try {
-      // Make the API request to split expenses among friends
       const response = await axios.post('/expense/split/friends', newExpense);
       console.log('Expense added:', response.data);
 
-      // Show a success toast notification
+      if (response.data.user) {
+        dispatch(setUser(response.data.user)); // Update user in Redux store with the new data
+      }
+
       toast.success('Expense added successfully!', {
-        position: toast.POSITION.TOP_CENTER
+        position: "top-center"
       });
 
-      // Clear input fields after adding the expense
+
       setAmount('');
       setCategory('');
       setDescription('');
       setSelectedFriends([]);
 
-      // Redirect to the /friends page after a short delay to allow the toast to show
       setTimeout(() => {
         navigate('/friends');
       }, 2000);
     } catch (error) {
       console.error('Error adding expense:', error);
       toast.error('Failed to add expense. Please try again.', {
-        position: toast.POSITION.TOP_CENTER
+        position: "top-center"
       });
     }
   };
 
-  // Handle selecting/deselecting friends
   const handleSelectFriend = (phoneNumber) => {
     setSelectedFriends((prevSelectedFriends) =>
       prevSelectedFriends.includes(phoneNumber)
-        ? prevSelectedFriends.filter((num) => num !== phoneNumber) // Deselect
-        : [...prevSelectedFriends, phoneNumber] // Select
+        ? prevSelectedFriends.filter((num) => num !== phoneNumber)
+        : [...prevSelectedFriends, phoneNumber]
     );
   };
 
@@ -87,7 +88,6 @@ const AddExpense = () => {
             type="number"
           />
 
-          {/* Dropdown for Category */}
           <FormControl fullWidth margin="normal">
             <InputLabel id="category-label">Category</InputLabel>
             <Select
@@ -117,7 +117,6 @@ const AddExpense = () => {
             rows={3}
           />
 
-          {/* Friends List with Checkboxes */}
           {friends.length > 0 ? (
             <Box sx={{ marginTop: '16px', width: '100%' }}>
               <Typography variant="h6">Select Friends</Typography>
@@ -150,7 +149,7 @@ const AddExpense = () => {
         </Box>
       </Container>
 
-      <ToastContainer /> {/* Add ToastContainer for toast notifications */}
+      <ToastContainer />
       <Navbar />
     </div>
   );

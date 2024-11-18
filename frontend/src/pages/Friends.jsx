@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Button,
   Container,
@@ -22,10 +22,11 @@ import { stringAvatar } from "../utils/avatarUtil"; // Importing the utility fun
 const AddFriends = () => {
   const dispatch = useDispatch();
   const friends = useSelector((state) => state.user.friends);
-  const debts = useSelector((state) => state.user.user.debts);
+  const user = useSelector((state) => state.user.user);
   const balance = useSelector((state) => state.user.user.balance); // Access balance from Redux
   const [phoneNumber, setPhoneNumber] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  console.log(friends);
 
   // Reference for input field to set focus
   const inputRef = useRef(null);
@@ -33,10 +34,16 @@ const AddFriends = () => {
   // Function to add friend by phone number
   const handleAddFriend = async () => {
     try {
-      const response = await axios.post("/user/addFriend", { phoneNumber });
-      const newFriend = response.data.friend;
+      if (phoneNumber != user.phoneNumber) {
+        const response = await axios.post("/user/addFriend", { phoneNumber });
+        const newFriend = response.data.friend;
 
-      dispatch(setFriends([...friends, newFriend]));
+        const isDuplicate = friends.some(friend => friend._id === newFriend._id);
+
+        if (!isDuplicate) {
+          dispatch(setFriends([...friends, newFriend]));
+        }
+      }
       setPhoneNumber("");
       setErrorMessage("");
     } catch (error) {
@@ -133,23 +140,22 @@ const AddFriends = () => {
       >
         {friends.length > 0 ? (
           <List>
-            {friends.map(({ _id, username }) => (
-              <ListItem
-                key={_id}
-                sx={{
-                  paddingLeft: "0px",
-                }}
-                secondaryAction={
-                  <ListItemText primary={debts[_id]} />
-                }
-              >
-                <ListItemAvatar>
-                  <Avatar variant="rounded" {...stringAvatar(username)} />
-                </ListItemAvatar>
-                <ListItemText primary={username} />
+            {friends.map(({ _id, username }) => {
+              return (
+                <ListItem
+                  key={_id}
+                  sx={{
+                    paddingLeft: "0px",
+                  }}
+                >
+                  <ListItemAvatar>
+                    <Avatar variant="rounded" {...stringAvatar(username)} />
+                  </ListItemAvatar>
+                  <ListItemText primary={username} />
+                </ListItem>
+              );
+            })}
 
-              </ListItem>
-            ))}
           </List>
         ) : (
           <Typography>No friends added yet!</Typography>
@@ -176,7 +182,7 @@ const AddFriends = () => {
 
       {/* Navbar */}
       <Navbar />
-    </Box>
+    </Box >
   );
 };
 

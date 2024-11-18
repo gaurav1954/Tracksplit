@@ -1,4 +1,3 @@
-// src/features/userSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -8,6 +7,7 @@ const initialState = {
         balance: 0,
         debts: {},
     },
+    debts: {}, // This holds the debts state
     friends: [],
     groups: [],
 };
@@ -17,18 +17,17 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action) => {
-            state.user = action.payload; // Update user data
+            state.user = action.payload;
         },
         setFriends: (state, action) => {
-            state.friends = action.payload; // Update friends array
+            state.friends = action.payload;
         },
         setGroups: (state, action) => {
-            state.groups = action.payload; // Update groups array
+            state.groups = action.payload;
         },
-        // Removed setAuth here as it's already in authSlice
-        resetUser: () => initialState, // Reset user state on logout
+        resetUser: () => initialState,
     },
 });
 
-export const { setUser, setFriends, setGroups, resetUser } = userSlice.actions;
+export const { setUser, setFriends, setGroups, setDebts, resetUser } = userSlice.actions;
 export default userSlice.reducer;
