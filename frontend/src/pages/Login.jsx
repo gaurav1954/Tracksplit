@@ -16,6 +16,7 @@ import axios from "axios";
 import { login } from "../features/authSlice"; // Auth actions
 import { setUser, setFriends, setGroups } from "../features/userSlice"; // User actions
 import "./login.css";
+import { fetchUserData } from "../utils/userInfo";
 
 const Login = () => {
   // Single state for both phoneNumber and password
@@ -38,24 +39,16 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+
     try {
       // Step 1: Login call
-      const response = await axios.post(`/auth/login`,
-        credentials // Send credentials object (phoneNumber, password)
-      );
+      const response = await axios.post(`/auth/login`, credentials);
 
       // Step 2: Dispatch login action to update isAuthenticated
       dispatch(login());
 
-      // Step 3: Fetch user details, friends, and groups
-      const userDetailsResponse = await axios.get(`/user/userInfo`);
-
-      // Step 4: Dispatch user details to Redux store
-      dispatch(setUser(userDetailsResponse.data.user));
-      dispatch(setFriends(userDetailsResponse.data.user.friends));
-      dispatch(setGroups(userDetailsResponse.data.groups));
-
-      console.log(userDetailsResponse);
+      // Step 3: Fetch user details using the service
+      await fetchUserData(dispatch);
 
       // Redirect to landing page after successful login
       navigate("/friends");

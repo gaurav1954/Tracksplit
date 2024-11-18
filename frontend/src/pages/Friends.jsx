@@ -14,19 +14,20 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import AddIcon from "@mui/icons-material/Add";
-import { setFriends } from "../features/userSlice";
 import axios from "axios";
 import Navbar from "../components/Navbar";
+import { fetchUserData } from "../utils/userInfo";
 import { stringAvatar } from "../utils/avatarUtil"; // Importing the utility functions
 
 const AddFriends = () => {
   const dispatch = useDispatch();
-  const friends = useSelector((state) => state.user.friends);
   const user = useSelector((state) => state.user.user);
-  const balance = useSelector((state) => state.user.user.balance); // Access balance from Redux
+  const friends = useSelector((state) => state.user.friends);
+  const debts = user.debts;
+  const balance = user.balance; // Access balance from Redux
   const [phoneNumber, setPhoneNumber] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  console.log(friends);
+  console.log(debts);
 
   // Reference for input field to set focus
   const inputRef = useRef(null);
@@ -36,17 +37,12 @@ const AddFriends = () => {
     try {
       if (phoneNumber != user.phoneNumber) {
         const response = await axios.post("/user/addFriend", { phoneNumber });
-        const newFriend = response.data.friend;
-
-        const isDuplicate = friends.some(friend => friend._id === newFriend._id);
-
-        if (!isDuplicate) {
-          dispatch(setFriends([...friends, newFriend]));
-        }
+        await fetchUserData(dispatch);
+        setPhoneNumber("");
+        setErrorMessage("");
       }
-      setPhoneNumber("");
-      setErrorMessage("");
     } catch (error) {
+      console.log(error)
       setErrorMessage("Failed to add friend. Please try again.");
     }
   };
@@ -147,6 +143,9 @@ const AddFriends = () => {
                   sx={{
                     paddingLeft: "0px",
                   }}
+                  secondaryAction={
+                    <ListItemText primary={debts[_id]} />
+                  }
                 >
                   <ListItemAvatar>
                     <Avatar variant="rounded" {...stringAvatar(username)} />
