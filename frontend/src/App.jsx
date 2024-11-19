@@ -8,7 +8,6 @@ import Signup from './pages/Signup';
 import FriendsPage from './pages/Friends';
 import CreateGroup from './pages/Group';
 import AddExpense from './pages/AddE';
-import Navbar from './components/Navbar'; // Import the Navbar
 import Layout from './pages/Layout';
 
 function AppRoutes() {
@@ -20,11 +19,9 @@ function AppRoutes() {
       {/* Redirect to /friends if authenticated or /login if not */}
       <Route path="/" element={isAuthenticated ? <Navigate to="/friends" /> : <Navigate to="/login" />} />
 
-      {/* Public routes (no Navbar) */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      {/* Protected routes (with Layout) */}
       <Route
         path="/friends"
         element={isAuthenticated ? <Layout><FriendsPage /></Layout> : <Navigate to="/login" />}
@@ -36,6 +33,14 @@ function AppRoutes() {
       <Route
         path="/add-expense"
         element={isAuthenticated ? <Layout><AddExpense /></Layout> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/activity"
+        element={isAuthenticated ? <Layout><Acitivty /></Layout> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/profile"
+        element={isAuthenticated ? <Layout><Profile /></Layout> : <Navigate to="/login" />}
       />
     </Routes>
   );
