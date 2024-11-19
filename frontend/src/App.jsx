@@ -9,6 +9,7 @@ import FriendsPage from './pages/Friends';
 import CreateGroup from './pages/Group';
 import AddExpense from './pages/AddE';
 import Layout from './pages/Layout';
+import Activity from './pages/Activity';
 
 function AppRoutes() {
   // Get authentication status from the Redux store
@@ -36,11 +37,7 @@ function AppRoutes() {
       />
       <Route
         path="/activity"
-        element={isAuthenticated ? <Layout><Acitivty /></Layout> : <Navigate to="/login" />}
-      />
-      <Route
-        path="/profile"
-        element={isAuthenticated ? <Layout><Profile /></Layout> : <Navigate to="/login" />}
+        element={isAuthenticated ? <Layout><Activity /></Layout> : <Navigate to="/login" />}
       />
     </Routes>
   );

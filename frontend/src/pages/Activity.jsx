@@ -1,5 +1,5 @@
 import React from 'react';
-import PieChart from '../components/PieChart'; // Import the PieChart component
+import PieChart from '../components/Pie'; // Import the PieChart component
 import './Activity.css'; // Import custom styles
 
 const Activity = () => {
