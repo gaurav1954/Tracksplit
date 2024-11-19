@@ -144,8 +144,14 @@ const AddFriends = () => {
                     paddingLeft: "0px",
                   }}
                   secondaryAction={
-                    <ListItemText primary={debts[_id]} />
+                    <ListItemText
+                      primary={debts[_id]}
+                      primaryTypographyProps={{
+                        style: { color: debts[_id] >= 0 ? "green" : "orange" }
+                      }}
+                    />
                   }
+
                 >
                   <ListItemAvatar>
                     <Avatar variant="rounded" {...stringAvatar(username)} />
