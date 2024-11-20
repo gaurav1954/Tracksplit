@@ -7,7 +7,7 @@ import { stringAvatar } from '../utils/avatarUtil';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { setUser } from '../features/userSlice'; // Import setUser action from userSlice
+import { fetchUserData } from "../utils/userInfo";
 
 const AddExpense = () => {
   const [amount, setAmount] = useState('');
@@ -38,10 +38,7 @@ const AddExpense = () => {
     try {
       const response = await axios.post('/expense/split/friends', newExpense);
       console.log('Expense added:', response.data);
-
-      if (response.data.user) {
-        dispatch(setUser(response.data.user)); // Update user in Redux store with the new data
-      }
+      await fetchUserData(dispatch);
 
       toast.success('Expense added successfully!', {
         position: "top-center"
@@ -55,7 +52,7 @@ const AddExpense = () => {
 
       setTimeout(() => {
         navigate('/friends');
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.error('Error adding expense:', error);
       toast.error('Failed to add expense. Please try again.', {

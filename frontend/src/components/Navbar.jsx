@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Button } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom'; // useLocation hook to track current route
+import { Link, useLocation } from 'react-router-dom';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import GroupIcon from '@mui/icons-material/Group';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,15 +12,32 @@ const Navbar = () => {
     const location = useLocation();
 
     return (
-        <AppBar position="fixed" className="bottom-navbar" style={{ top: 'auto', bottom: 0 }}>
-            <Toolbar className="nav-links">
+        <AppBar
+            position="fixed"
+            style={{
+                top: 'auto',
+                bottom: 0,
+                width: '100vw',
+                boxShadow: '0 -2px 5px rgba(0,0,0,0.2)',
+            }}
+        >
+            <Toolbar
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    padding: 0,
+                }}
+            >
                 <Button
                     color="inherit"
                     component={Link}
                     to="/friends"
-                    className="nav-button"
                     style={{
                         color: location.pathname === '/friends' ? 'black' : 'inherit',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
                 >
                     <EmojiPeopleIcon />
@@ -30,9 +47,12 @@ const Navbar = () => {
                     color="inherit"
                     component={Link}
                     to="/group"
-                    className="nav-button"
                     style={{
                         color: location.pathname === '/group' ? 'black' : 'inherit',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
                 >
                     <GroupIcon />
@@ -42,21 +62,27 @@ const Navbar = () => {
                     color="inherit"
                     component={Link}
                     to="/add-expense"
-                    className="nav-button"
                     style={{
                         color: location.pathname === '/add-expense' ? 'black' : 'inherit',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
                 >
-                    <AddIcon /> {/* "+" Icon for Adding Expenses */}
+                    <AddIcon />
                 </Button>
 
                 <Button
                     color="inherit"
                     component={Link}
                     to="/activity"
-                    className="nav-button"
                     style={{
                         color: location.pathname === '/activity' ? 'black' : 'inherit',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
                 >
                     <ListAltIcon />
@@ -66,9 +92,12 @@ const Navbar = () => {
                     color="inherit"
                     component={Link}
                     to="/profile"
-                    className="nav-button"
                     style={{
                         color: location.pathname === '/profile' ? 'black' : 'inherit',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
                     }}
                 >
                     <AccountCircleIcon />

@@ -10,6 +10,7 @@ exports.getUserDetails = async (req, res) => {
 
         // Fetch user and populate their friends
         const user = await User.findOne({ phoneNumber: userPhoneNumber })
+            .populate('expenses')
             .populate('friends', 'username  phoneNumber ');
 
         if (!user) {

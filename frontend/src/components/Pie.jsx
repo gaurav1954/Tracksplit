@@ -1,35 +1,38 @@
 import React, { useRef } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useSelector } from "react-redux";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = () => {
   const chartRef = useRef(null);
+  const user = useSelector((state) => state.user.user);
+  console.log(user);
+  // Process expenses to calculate category-wise totals
+  const categoryTotals = {};
+  user.expenses.forEach((expense) => {
+    const category = expense.category.toLowerCase(); // Ensure category is lowercase
+    const userShare = expense.amount / expense.splitBetween.length; // User's share of the expense
+    categoryTotals[category] = (categoryTotals[category] || 0) + userShare; // Accumulate total for the category
+  });
 
+  // Extract labels and data from the categoryTotals object
+  const labels = Object.keys(categoryTotals);
+  const dataValues = Object.values(categoryTotals);
+
+  // Create the data object for the Pie chart
   const data = {
-    labels: ['Food', 'Drinks', 'Fuel', 'Entertainment', 'Groceries', 'Travel', 'Other'], // Enum categories
+    labels, // Dynamic labels
     datasets: [
       {
         label: 'Category-wise Spending',
-        data: [400, 200, 150, 100, 250, 300, 180], // Example spending data
+        data: dataValues, // Dynamic data
         backgroundColor: [
-          '#FF6F61', // Food: Vibrant Coral
-          '#FFB74D', // Drinks: Bright Orange
-          '#4FC3F7', // Fuel: Sky Blue
-          '#9575CD', // Entertainment: Amethyst Purple
-          '#81C784', // Groceries: Fresh Green
-          '#FFD54F', // Travel: Sunflower Yellow
-          '#E0E0E0', // Other: Neutral Gray
+          '#FF6F61', '#FFB74D', '#4FC3F7', '#9575CD', '#81C784', '#FFD54F', '#E0E0E0',
         ],
         hoverBackgroundColor: [
-          '#FF8A77', // Food: Slightly lighter
-          '#FFCB7D', // Drinks: Slightly lighter
-          '#74D0F4', // Fuel: Slightly lighter
-          '#B39DDB', // Entertainment: Slightly lighter
-          '#A5D6A7', // Groceries: Slightly lighter
-          '#FFE27B', // Travel: Slightly lighter
-          '#F5F5F5', // Other: Slightly lighter
+          '#FF8A77', '#FFCB7D', '#74D0F4', '#B39DDB', '#A5D6A7', '#FFE27B', '#F5F5F5',
         ],
         borderColor: '#ffffff',
         borderWidth: 2,
@@ -37,6 +40,7 @@ const PieChart = () => {
     ],
   };
 
+  // Chart options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -68,18 +72,6 @@ const PieChart = () => {
         borderColor: '#ddd',
         borderWidth: 1,
       },
-    },
-    onClick: (event, elements) => {
-      if (elements.length > 0) {
-        const chart = chartRef.current;
-        const datasetIndex = elements[0].datasetIndex;
-        const dataIndex = elements[0].index;
-
-        const category = data.labels[dataIndex];
-        const amount = data.datasets[datasetIndex].data[dataIndex];
-        const total = data.datasets[datasetIndex].data.reduce((sum, value) => sum + value, 0);
-        const percentage = ((amount / total) * 100).toFixed(2);
-      }
     },
   };
 

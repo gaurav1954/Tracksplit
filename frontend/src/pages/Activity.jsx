@@ -6,7 +6,7 @@ const Activity = () => {
   return (
     <div className="activity-page">
       <div className="activity-header">
-        <h1>Activity Page</h1>
+        <h1>Expense breakdown</h1>
         <p>Here's the breakdown of payment distribution:</p>
       </div>
       <PieChart />

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   Button,
   Container,
@@ -15,7 +15,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
-import Navbar from "../components/Navbar";
 import { fetchUserData } from "../utils/userInfo";
 import { stringAvatar } from "../utils/avatarUtil"; // Importing the utility functions
 
@@ -184,9 +183,6 @@ const AddFriends = () => {
           </Button>
         </Box>
       </Container>
-
-      {/* Navbar */}
-      <Navbar />
     </Box >
   );
 };
