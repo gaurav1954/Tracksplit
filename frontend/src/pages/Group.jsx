@@ -1,156 +1,92 @@
-import React, { useState, useRef } from "react";
-import {
-  Button,
-  Container,
-  Typography,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  TextField,
-  IconButton,
-  Box,
-} from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import AddIcon from "@mui/icons-material/Add";
+import React, { useState } from "react";
+import { Container, List, ListItem, ListItemAvatar, ListItemText, Avatar, Typography, Button, Box } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
-import { setGroups } from "../features/userSlice"; // Importing setGroups action
-import axios from "axios";
-import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
-const CreateGroup = () => {
-  const dispatch = useDispatch();
-  const groups = useSelector((state) => state.user.groups);
-  const [groupName, setGroupName] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+const Group = () => {
+  // State to hold the groups
+  const [groups, setGroups] = useState([
+    { id: 1, name: "Family", description: "Family Group", members: ["Alice"] },
+    { id: 2, name: "Friends", description: "Friends Group", members: ["Bob"] },
+  ]);
 
-  // Reference for input field to set focus
-  const inputRef = useRef(null);
+  // Use navigate hook from react-router-dom
+  const navigate = useNavigate();
 
-  // Function to create a group by name
-  const handleCreateGroup = async () => {
-    try {
-      const response = await axios.post("/api/groups", { name: groupName });
-      const newGroup = response.data; // Assume the API returns the new group
-
-      dispatch(setGroups([...groups, newGroup]));
-      setGroupName("");
-      setErrorMessage("");
-    } catch (error) {
-      setErrorMessage("Failed to create group. Please try again.");
-    }
-  };
-
-  // Handle adding group button click to focus on input field
-  const handleFocusInput = () => {
-    inputRef.current.focus(); // Focus input field on button click
+  // Navigate to Group Form Page
+  const handleCreateGroup = () => {
+    navigate("/create-group-form"); // Adjust to match your route for the group form page
   };
 
   return (
-    <Box
-      sx={{
-        paddingLeft: "15px",
-        paddingRight: "15px",
-        paddingTop: "16px", // Add some top padding if needed
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "16px",
-        }}
+    <Container maxWidth="md">
+      <Typography variant="h4" gutterBottom align="center">
+        Groups
+      </Typography>
+
+      {/* Button to navigate to Group Form */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleCreateGroup}
+        sx={{ marginBottom: 2 }}
       >
-        <TextField
-          label="Group Name"
-          variant="outlined"
-          value={groupName}
-          onChange={(e) => setGroupName(e.target.value)}
-          margin="normal"
-          sx={{
-            width: "80%",
-            borderRadius: "100px", // Rounded corners
-            marginRight: "8px", // Space between input and button
-          }}
-          ref={inputRef} // Set reference to input field for focusing
-        />
+        Create New Group
+      </Button>
 
-        {/* Add group icon next to input */}
-        <IconButton
-          color="primary"
-          onClick={handleCreateGroup}
-          sx={{ padding: "8px" }} // Consistent padding
-        >
-          <AddIcon />
-        </IconButton>
-      </Box>
-
-      {/* Error message if any */}
-      {errorMessage && (
-        <Typography
-          variant="body2"
-          color="error"
-          gutterBottom
-        >
-          {errorMessage}
-        </Typography>
-      )}
-
-      {/* Groups List */}
-      <Container
-        maxWidth="xs"
-        className="create-group-container"
-        sx={{
-          paddingLeft: "0px"
-        }}
-      >
-        {groups.length > 0 ? (
-          <List>
-            {groups.map(({ id, name }) => (
-              <ListItem
-                key={id}
+      {/* Render the list of groups */}
+      {groups.length > 0 ? (
+        <List>
+          {groups.map((group) => (
+            <ListItem
+              key={group.id}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                padding: "16px",
+                marginBottom: "8px",
+              }}
+            >
+              <Box
                 sx={{
-                  paddingLeft: "0px"
+                  display: "flex",
+                  alignItems: "center",
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar variant="rounded">
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      backgroundColor: "primary.main",
+                      marginRight: "8px",
+                    }}
+                  >
                     <GroupIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={name} />
-              </ListItem>
-            ))}
-          </List>
-        ) : (
-          <Typography>No groups created yet!</Typography>
-        )}
-
-        {/* Button to show input field and make it active */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center", // Align button to the left
-            marginTop: "16px",
-          }}
-        >
-          <Button
-            variant="outlined"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleFocusInput} // Focus input field on button click
-          >
-            Create group
-          </Button>
-        </Box>
-      </Container>
-
-      {/* Navbar */}
-      <Navbar />
-    </Box>
+                <Box>
+                  <Typography variant="h6">{group.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {group.description}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Members: {group.members.join(", ")}
+                  </Typography>
+                </Box>
+              </Box>
+            </ListItem>
+          ))}
+        </List>
+      ) : (
+        <Typography textAlign="center" color="text.secondary">
+          No groups created yet!
+        </Typography>
+      )}
+    </Container>
   );
 };
 
-export default CreateGroup;
+export default Group;
