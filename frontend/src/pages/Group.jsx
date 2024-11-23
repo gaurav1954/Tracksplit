@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { Container, List, ListItem, ListItemAvatar, ListItemText, Avatar, Typography, Button, Box } from "@mui/material";
+import { Container, List, ListItem, ListItemAvatar, Avatar, Typography, Button, Box } from "@mui/material";
 import GroupIcon from "@mui/icons-material/Group";
 import { useNavigate } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
+import { useSelector } from "react-redux";
 
 const Group = () => {
   // State to hold the groups
-  const [groups, setGroups] = useState([
-    { id: 1, name: "Family", description: "Family Group", members: ["Alice"] },
-    { id: 2, name: "Friends", description: "Friends Group", members: ["Bob"] },
-  ]);
+  const groups = useSelector(state => state.user.groups);
+  console.log(groups);
 
   // Use navigate hook from react-router-dom
   const navigate = useNavigate();
 
   // Navigate to Group Form Page
   const handleCreateGroup = () => {
-    navigate("/create-group-form"); // Adjust to match your route for the group form page
+    navigate("/createGroup"); // Adjust to match your route for the group form page
   };
 
   return (
@@ -24,15 +24,7 @@ const Group = () => {
         Groups
       </Typography>
 
-      {/* Button to navigate to Group Form */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleCreateGroup}
-        sx={{ marginBottom: 2 }}
-      >
-        Create New Group
-      </Button>
+
 
       {/* Render the list of groups */}
       {groups.length > 0 ? (
@@ -69,12 +61,6 @@ const Group = () => {
                 </ListItemAvatar>
                 <Box>
                   <Typography variant="h6">{group.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {group.description}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Members: {group.members.join(", ")}
-                  </Typography>
                 </Box>
               </Box>
             </ListItem>
@@ -85,6 +71,23 @@ const Group = () => {
           No groups created yet!
         </Typography>
       )}
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center", // Centers the button horizontally
+        }}
+      >
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleCreateGroup}
+          startIcon={<AddIcon />}
+        >
+          Create New Group
+        </Button>
+      </Box>
+
     </Container>
   );
 };

@@ -6,10 +6,11 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FriendsPage from './pages/Friends';
-import CreateGroup from './pages/Group';
+import Group from './pages/Group';
 import AddExpense from './pages/AddE';
 import Layout from './pages/Layout';
 import Activity from './pages/Activity';
+import CreateGroup from './pages/GroupForm';
 
 function AppRoutes() {
   // Get authentication status from the Redux store
@@ -29,7 +30,7 @@ function AppRoutes() {
       />
       <Route
         path="/group"
-        element={isAuthenticated ? <Layout><CreateGroup /></Layout> : <Navigate to="/login" />}
+        element={isAuthenticated ? <Layout><Group /></Layout> : <Navigate to="/login" />}
       />
       <Route
         path="/add-expense"
@@ -38,6 +39,10 @@ function AppRoutes() {
       <Route
         path="/activity"
         element={isAuthenticated ? <Layout><Activity /></Layout> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/createGroup"
+        element={isAuthenticated ? <Layout><CreateGroup /></Layout> : <Navigate to="/login" />}
       />
     </Routes>
   );
