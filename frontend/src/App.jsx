@@ -11,6 +11,7 @@ import AddExpense from './pages/AddE';
 import Layout from './pages/Layout';
 import Activity from './pages/Activity';
 import CreateGroup from './pages/GroupForm';
+import Profile from './pages/Profile';
 
 function AppRoutes() {
   // Get authentication status from the Redux store
@@ -39,6 +40,10 @@ function AppRoutes() {
       <Route
         path="/activity"
         element={isAuthenticated ? <Layout><Activity /></Layout> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/profile"
+        element={isAuthenticated ? <Layout><Profile /></Layout> : <Navigate to="/login" />}
       />
       <Route
         path="/createGroup"

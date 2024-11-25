@@ -1,0 +1,35 @@
+/* profile.css */
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.profile-avatar {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Centers the avatar horizontally */
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.profile-avatar img {
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+}
+
+.profile-edit-section {
+    width: 100%;
+}
+
+.profile-edit-section button {
+    width: 100%;
+    margin-top: 10px;
+}
