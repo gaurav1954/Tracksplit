@@ -26,7 +26,6 @@ const AddFriends = () => {
   const balance = user.balance; // Access balance from Redux
   const [phoneNumber, setPhoneNumber] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  console.log(debts);
 
   // Reference for input field to set focus
   const inputRef = useRef(null);
@@ -144,7 +143,7 @@ const AddFriends = () => {
                   }}
                   secondaryAction={
                     <ListItemText
-                      primary={debts[_id]}
+                      primary={debts[_id].toFixed(2)}
                       primaryTypographyProps={{
                         style: { color: debts[_id] >= 0 ? "green" : "orange" }
                       }}

@@ -6,6 +6,13 @@ import {
   Box,
   Typography,
   Paper,
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Stack,
+  Grid,
 } from "@mui/material";
 
 const GroupChat = () => {
@@ -15,7 +22,6 @@ const GroupChat = () => {
   const group = useSelector((state) =>
     state.user.groups.find((g) => g.id === group_id)
   );
-  console.log(group);
   const currentUser = useSelector((state) => state.user.user.username);
 
   // Guard clause in case the group is not found
@@ -72,6 +78,34 @@ const GroupChat = () => {
         </Typography>
       </Box>
 
+      {/* Group Members - Horizontal Scroll */}
+      <Box
+        sx={{
+          marginTop: 2,
+          overflowX: "auto",
+          display: "flex",
+          gap: 2,
+          padding: 2,
+          backgroundColor: "grey.100",
+          borderRadius: "8px",
+        }}
+      >
+        {group.members.map((member) => (
+          <Box
+            key={member.id}
+            sx={{
+              textAlign: "center",
+              width: "80px",
+            }}
+          >
+            <Avatar sx={{ margin: "0 auto", bgcolor: "primary.main" }}>
+              {member.username.charAt(0).toUpperCase()}
+            </Avatar>
+            <Typography variant="caption">{member.username}</Typography>
+          </Box>
+        ))}
+      </Box>
+
       {/* Chat Box */}
       <Box
         sx={{
@@ -86,7 +120,10 @@ const GroupChat = () => {
             key={expense.id}
             sx={{
               display: "flex",
-              justifyContent: expense.paidBy === currentUser ? "flex-end" : "flex-start",
+              justifyContent:
+                expense.paidBy.username === currentUser
+                  ? "flex-end"
+                  : "flex-start",
             }}
           >
             <Paper
@@ -94,8 +131,14 @@ const GroupChat = () => {
               sx={{
                 padding: 2,
                 maxWidth: "70%",
-                backgroundColor: expense.paidBy === currentUser ? "primary.light" : "grey.100",
-                color: expense.paidBy === currentUser ? "primary.contrastText" : "text.primary",
+                backgroundColor:
+                  expense.paidBy.username === currentUser
+                    ? "primary.light"
+                    : "grey.100",
+                color:
+                  expense.paidBy.username === currentUser
+                    ? "primary.contrastText"
+                    : "text.primary",
                 borderRadius: "12px",
               }}
             >
@@ -103,24 +146,30 @@ const GroupChat = () => {
                 <Typography
                   variant="body2"
                   fontWeight="bold"
-                  textAlign={expense.paidBy === currentUser ? "right" : "left"}
+                  textAlign={
+                    expense.paidBy.username === currentUser ? "right" : "left"
+                  }
                 >
-                  {expense.paidBy === currentUser ? "YOU" : expense.paidBy}
+                  Paid by: {expense.paidBy.username === currentUser
+                    ? "YOU"
+                    : expense.paidBy.username}
                 </Typography>
                 <Typography variant="body1" fontWeight="medium">
                   ₹{expense.amount}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {expense.note}
+                  {expense.description}
                 </Typography>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  textAlign={expense.paidBy === currentUser ? "right" : "left"}
+                  textAlign={
+                    expense.paidBy.username === currentUser ? "right" : "left"
+                  }
                   display="block"
                   mt={1}
                 >
-                  {formatDate(expense.timestamp)}
+                  {formatDate(expense.date)}
                 </Typography>
               </Box>
             </Paper>

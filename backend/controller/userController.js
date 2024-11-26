@@ -10,8 +10,21 @@ exports.getUserDetails = async (req, res) => {
 
         // Fetch user and populate their friends
         const user = await User.findOne({ phoneNumber: userPhoneNumber })
-            .populate('expenses')
-            .populate('friends', 'username  phoneNumber ');
+            .populate({
+                path: 'expenses', // Populates the expenses field
+                populate: {
+                    path: 'paidBy', // Populates the paidBy field inside each expense
+                    select: 'username' // Select specific fields from the user
+                }
+            })
+            .populate({
+                path: 'expenses', // Populates the expenses field
+                populate: {
+                    path: 'group', // Populates the paidBy field inside each expense
+                    select: 'name' // Select specific fields from the user
+                }
+            })
+            .populate('friends', 'username phoneNumber');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -19,11 +32,15 @@ exports.getUserDetails = async (req, res) => {
 
         // Fetch groups where the user is a member
         const groups = await Group.find({ members: user._id })
-            .populate('expenses')  // Populates the expenses field
-            .populate('members', 'username phoneNumber');  // Populates the members field
+            .populate({
+                path: 'expenses', // Populates the expenses field
+                populate: {
+                    path: 'paidBy', // Populates the paidBy field inside each expense
+                    select: 'username' // Select specific fields from the user
+                }
+            })
+            .populate('members', 'username phoneNumber'); // Populates the members field
 
-
-        console.log(groups);
         return res.status(200).json({
             message: 'User details fetched successfully',
             user,
@@ -33,6 +50,7 @@ exports.getUserDetails = async (req, res) => {
         return res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+
 
 
 // Add a friend to a user

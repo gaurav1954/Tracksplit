@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 const Group = () => {
   const groups = useSelector((state) => state.user.groups);
   const navigate = useNavigate();
-  console.log(groups);
 
   const handleGroupClick = (groupId) => {
     navigate(`/groupChat/${groupId}`); // Navigate to GroupChat page with group ID

@@ -8,13 +8,10 @@ import {
   Box,
   Card,
   CardContent,
-  Checkbox,
-  FormControlLabel,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { login } from "../features/authSlice"; // Auth actions
-import { setUser, setFriends, setGroups } from "../features/userSlice"; // User actions
 import "./login.css";
 import { fetchUserData } from "../utils/userInfo";
 

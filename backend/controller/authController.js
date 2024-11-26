@@ -35,12 +35,12 @@ const userLogIn = async (req, res, next) => {
 
         const user = await User.findOne({ phoneNumber });
         if (!user) {
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid phoneNumber or password" });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid phoneNumber or password" });
         }
 
         res.clearCookie(process.env.COOKIE_NAME, {
