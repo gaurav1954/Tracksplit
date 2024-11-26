@@ -6,16 +6,12 @@ import AddIcon from "@mui/icons-material/Add";
 import { useSelector } from "react-redux";
 
 const Group = () => {
-  // State to hold the groups
-  const groups = useSelector(state => state.user.groups);
+  const groups = useSelector((state) => state.user.groups);
+  const navigate = useNavigate();
   console.log(groups);
 
-  // Use navigate hook from react-router-dom
-  const navigate = useNavigate();
-
-  // Navigate to Group Form Page
-  const handleCreateGroup = () => {
-    navigate("/createGroup"); // Adjust to match your route for the group form page
+  const handleGroupClick = (groupId) => {
+    navigate(`/groupChat/${groupId}`); // Navigate to GroupChat page with group ID
   };
 
   return (
@@ -24,9 +20,6 @@ const Group = () => {
         Groups
       </Typography>
 
-
-
-      {/* Render the list of groups */}
       {groups.length > 0 ? (
         <List>
           {groups.map((group) => (
@@ -40,7 +33,9 @@ const Group = () => {
                 borderRadius: "8px",
                 padding: "16px",
                 marginBottom: "8px",
+                cursor: "pointer",
               }}
+              onClick={() => handleGroupClick(group._id)} // Navigate on click
             >
               <Box
                 sx={{
@@ -72,22 +67,16 @@ const Group = () => {
         </Typography>
       )}
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center", // Centers the button horizontally
-        }}
-      >
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Button
           variant="outlined"
           color="primary"
-          onClick={handleCreateGroup}
+          onClick={() => navigate("/createGroup")}
           startIcon={<AddIcon />}
         >
           Create New Group
         </Button>
       </Box>
-
     </Container>
   );
 };

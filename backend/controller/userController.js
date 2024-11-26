@@ -20,9 +20,10 @@ exports.getUserDetails = async (req, res) => {
         // Fetch groups where the user is a member
         const groups = await Group.find({ members: user._id })
             .populate('expenses')  // Populates the expenses field
-            .populate('members', 'username  phoneNumber ');  // Populates the members field
+            .populate('members', 'username phoneNumber');  // Populates the members field
 
 
+        console.log(groups);
         return res.status(200).json({
             message: 'User details fetched successfully',
             user,

@@ -12,6 +12,7 @@ import Layout from './pages/Layout';
 import Activity from './pages/Activity';
 import CreateGroup from './pages/GroupForm';
 import Profile from './pages/Profile';
+import GroupChat from './pages/GroupChat';
 
 function AppRoutes() {
   // Get authentication status from the Redux store
@@ -48,6 +49,10 @@ function AppRoutes() {
       <Route
         path="/createGroup"
         element={isAuthenticated ? <Layout><CreateGroup /></Layout> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/groupChat/:groupId"
+        element={isAuthenticated ? <Layout><GroupChat /></Layout> : <Navigate to="/login" />}
       />
     </Routes>
   );

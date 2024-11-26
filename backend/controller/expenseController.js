@@ -61,7 +61,7 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
 
 exports.splitGroupExpense = async (req, res) => {
     try {
-        const { groupId, totalAmount, description, category } = req.body;
+        const { groupId, amount, description, category } = req.body;
         const payerPhoneNumber = res.locals.jwtData.phoneNumber; // Using phone number from JWT
 
         // Find the group
@@ -78,12 +78,12 @@ exports.splitGroupExpense = async (req, res) => {
         }
 
         // Calculate the split amount
-        const splitAmount = (totalAmount / group.members.length).toFixed(2); // Rounded to 2 decimal places
+        const splitAmount = (amount / group.members.length).toFixed(2); // Rounded to 2 decimal places
 
         // Create new expense in the database
         const expense = new Expense({
             description,
-            amount: totalAmount,
+            amount: amount,
             category,
             paidBy: payer._id,
             group: group._id, // Associate with the group
@@ -114,10 +114,12 @@ exports.splitGroupExpense = async (req, res) => {
             }
 
             // Save the updated user data for each member
+            member.markModified('debts');
             await member.save();
         }
 
         // Save the updated payer data
+        payer.markModified('debts');
         await payer.save();
 
         // Push the expense ID to the group's expenses array (assuming Group model has an expenses array)
@@ -125,7 +127,7 @@ exports.splitGroupExpense = async (req, res) => {
         await group.save(); // Save the updated group data
 
         return res.status(200).json({
-            message: `Expense of ${totalAmount} split among group members successfully`,
+            message: `Expense of ${amount} split among group members successfully`,
             expense,
             data: {
                 payer: payer.username,
