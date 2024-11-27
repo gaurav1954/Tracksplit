@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { useSelector } from "react-redux";
@@ -8,10 +8,31 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const PieChart = () => {
   const chartRef = useRef(null);
   const user = useSelector((state) => state.user.user);
-  console.log(user);
-  // Process expenses to calculate category-wise totals
+
+  // State for start and end dates
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  // Filter expenses based on the selected date range, including both start and end dates
+  const filteredExpenses = user.expenses.filter((expense) => {
+    const expenseDate = new Date(expense.date).setHours(0, 0, 0, 0);
+    const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
+    const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
+
+    return (
+      (!start || expenseDate >= start) &&
+      (!end || expenseDate <= end)
+    );
+  });
+
+  // Calculate total expenditure for the selected time period
+  const totalExpenditure = filteredExpenses.reduce((sum, expense) => {
+    return sum + expense.amount / expense.splitBetween.length;
+  }, 0);
+
+  // Calculate category-wise totals for filtered expenses
   const categoryTotals = {};
-  user.expenses.forEach((expense) => {
+  filteredExpenses.forEach((expense) => {
     const category = expense.category.toLowerCase(); // Ensure category is lowercase
     const userShare = expense.amount / expense.splitBetween.length; // User's share of the expense
     categoryTotals[category] = (categoryTotals[category] || 0) + userShare; // Accumulate total for the category
@@ -97,9 +118,63 @@ const PieChart = () => {
       >
         Spending Categories
       </h3>
-      <div style={{ height: '320px' }}>
-        <Pie ref={chartRef} data={data} options={options} />
+
+      {/* Date range selectors */}
+      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+        <div style={{ marginBottom: '10px' }}>
+          <label>
+            Start Date:
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={{ marginLeft: '5px' }}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            End Date:
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={{ marginLeft: '5px' }}
+            />
+          </label>
+        </div>
       </div>
+
+      {/* Display total expenditure */}
+      <p
+        style={{
+          textAlign: 'center',
+          fontFamily: "'Poppins', sans-serif",
+          fontSize: '18px',
+          color: '#4A4A4A',
+          marginBottom: '10px',
+        }}
+      >
+        Total Expenditure: ₹{totalExpenditure.toLocaleString()}
+      </p>
+
+      {/* Conditionally render chart or message */}
+      {filteredExpenses.length > 0 ? (
+        <div style={{ height: '320px' }}>
+          <Pie ref={chartRef} data={data} options={options} />
+        </div>
+      ) : (
+        <p
+          style={{
+            textAlign: 'center',
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: '16px',
+            color: '#FF6F61',
+          }}
+        >
+          No expenses found in the selected date range.
+        </p>
+      )}
     </div>
   );
 };
