@@ -40,11 +40,23 @@ const AddFriends = () => {
         setErrorMessage("");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setErrorMessage("Failed to add friend. Please try again.");
     }
   };
-
+  const handleSettle = async (friendPhoneNumber) => {
+    try {
+      // Send friend's phone number to the backend to settle debt
+      const response = await axios.post("/expense/settle", { phoneNumber: friendPhoneNumber });
+      if (response.status === 200) {
+        // Fetch updated user data after settling
+        await fetchUserData(dispatch);
+      }
+    } catch (error) {
+      console.error("Error settling debt:", error);
+      setErrorMessage("Failed to settle debt. Please try again.");
+    }
+  };
   // Handle adding friend button click to focus on input field
   const handleFocusInput = () => {
     inputRef.current.focus(); // Focus input field on button click
@@ -91,39 +103,24 @@ const AddFriends = () => {
 
       {/* Error message if any */}
       {errorMessage && (
-        <Typography
-          variant="body2"
-          color="error"
-          gutterBottom
-        >
+        <Typography variant="body2" color="error" gutterBottom>
           {errorMessage}
         </Typography>
       )}
 
       {balance < 0 ? (
-        <Typography
-          variant="h6"
-          sx={{ marginBottom: "16px", color: "black" }}
-        >
+        <Typography variant="h6" sx={{ marginBottom: "16px", color: "black" }}>
           Overall you owe{" "}
           <span style={{ color: "orange" }}>
             {Math.abs(balance).toFixed(2)}
           </span>
-
         </Typography>
       ) : (
-        <Typography
-          variant="h6"
-          sx={{ marginBottom: "16px", color: "black" }}
-        >
+        <Typography variant="h6" sx={{ marginBottom: "16px", color: "black" }}>
           You are owed{" "}
-          <span style={{ color: "green" }}>
-            {balance.toFixed(2)}
-          </span>
-
+          <span style={{ color: "green" }}>{balance.toFixed(2)}</span>
         </Typography>
       )}
-
 
       <Container
         maxWidth="xs"
@@ -134,7 +131,7 @@ const AddFriends = () => {
       >
         {friends.length > 0 ? (
           <List>
-            {friends.map(({ _id, username }) => {
+            {friends.map(({ _id, username, phoneNumber }) => {
               return (
                 <ListItem
                   key={_id}
@@ -142,23 +139,29 @@ const AddFriends = () => {
                     paddingLeft: "0px",
                   }}
                   secondaryAction={
-                    <ListItemText
-                      primary={debts[_id].toFixed(2)}
-                      primaryTypographyProps={{
-                        style: { color: debts[_id] >= 0 ? "green" : "orange" }
-                      }}
-                    />
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      disabled={!debts[_id] || debts[_id] > 0} // Disable if no debt or if debt is positive
+                      onClick={() => handleSettle(phoneNumber)}
+                    >
+                      Settle
+                    </Button>
                   }
-
                 >
                   <ListItemAvatar>
                     <Avatar variant="rounded" {...stringAvatar(username)} />
                   </ListItemAvatar>
-                  <ListItemText primary={username} />
+                  <ListItemText
+                    primary={username}
+                    secondary={debts[_id].toFixed(2)}
+                    secondaryTypographyProps={{
+                      style: { color: debts[_id] >= 0 ? "green" : "orange" },
+                    }}
+                  />
                 </ListItem>
               );
             })}
-
           </List>
         ) : (
           <Typography>No friends added yet!</Typography>
@@ -182,7 +185,7 @@ const AddFriends = () => {
           </Button>
         </Box>
       </Container>
-    </Box >
+    </Box>
   );
 };
 

@@ -18,7 +18,7 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
             return res.status(404).json({ message: 'One or more friends not found.' });
         }
 
-        const splitAmount = (amount / (friends.length + 1)).toFixed(2);
+        const splitAmount = Number((amount / (friends.length + 1)).toFixed(2));
 
         const expense = new Expense({
             description,
@@ -31,26 +31,24 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
         await expense.save();
 
         for (const friend of friends) {
-            friend.balance = (friend.balance - parseFloat(splitAmount)).toFixed(2);
-            friend.debts[payer._id] = (parseFloat(friend.debts[payer._id] || 0) - parseFloat(splitAmount)).toFixed(2);
+            friend.balance = Number(friend.balance) - splitAmount;
+            friend.debts[payer._id] = Number(friend.debts[payer._id] || 0) - splitAmount;
             friend.expenses.push(expense._id);
             friend.markModified('debts');
             await friend.save();
         }
 
-        payer.balance = (payer.balance + parseFloat(splitAmount) * friends.length).toFixed(2);
+        payer.balance = Number(payer.balance) + splitAmount * friends.length;
         for (const friend of friends) {
-            payer.debts[friend._id] = (parseFloat(payer.debts[friend._id] || 0) + parseFloat(splitAmount)).toFixed(2);
-
+            payer.debts[friend._id] = Number(payer.debts[friend._id] || 0) + splitAmount;
         }
         payer.expenses.push(expense._id);
         payer.markModified('debts');
         await payer.save();
 
-        // Send the updated user data along with the debts and balance
         return res.status(200).json({
             message: `Expense of ${amount} split successfully`,
-            user: payer, // Return the updated payer object
+            user: payer,
         });
     } catch (error) {
         console.error('Error splitting expense:', error);
@@ -59,72 +57,58 @@ exports.splitExpenseBetweenFriends = async (req, res) => {
 };
 
 
+
 exports.splitGroupExpense = async (req, res) => {
     try {
         const { groupId, amount, description, category } = req.body;
-        const payerPhoneNumber = res.locals.jwtData.phoneNumber; // Using phone number from JWT
+        const payerPhoneNumber = res.locals.jwtData.phoneNumber;
 
-        // Find the group
         const group = await Group.findById(groupId).populate('members');
-
         if (!group) {
             return res.status(404).json({ message: 'Group not found.' });
         }
 
-        // Find the payer
         const payer = await User.findOne({ phoneNumber: payerPhoneNumber });
         if (!payer) {
             return res.status(404).json({ message: 'Payer not found.' });
         }
 
-        // Calculate the split amount
-        const splitAmount = (amount / group.members.length).toFixed(2); // Rounded to 2 decimal places
+        const splitAmount = Number((amount / group.members.length).toFixed(2));
 
-        // Create new expense in the database
         const expense = new Expense({
             description,
-            amount: amount,
+            amount,
             category,
             paidBy: payer._id,
-            group: group._id, // Associate with the group
-            splitBetween: group.members.map(member => member._id), // All group members
+            group: group._id,
+            splitBetween: group.members.map(member => member._id),
         });
 
-        // Save the new expense
         await expense.save();
 
-        // Push the expense ID to the payer's expenses
-        payer.expenses.push(expense._id); // Use `_id` to refer to the saved expense
+        payer.expenses.push(expense._id);
 
-        // Update balances and debts for each member in the group
         for (const member of group.members) {
             if (member._id.toString() === payer._id.toString()) {
-                member.balance += parseFloat(splitAmount) * (group.members.length - 1); // Payer gets reimbursed for others
+                member.balance = Number(member.balance) + splitAmount * (group.members.length - 1);
             } else {
-                member.balance -= parseFloat(splitAmount);
+                member.balance = Number(member.balance) - splitAmount;
 
-                // Update payer's debts for this member
-                payer.debts[member._id] = (payer.debts[member._id] || 0) + parseFloat(splitAmount);
+                payer.debts[member._id] = Number(payer.debts[member._id] || 0) + splitAmount;
+                member.debts[payer._id] = Number(member.debts[payer._id] || 0) - splitAmount;
 
-                // Update this member's debts for the payer
-                member.debts[payer._id] = (member.debts[payer._id] || 0) - parseFloat(splitAmount);
-
-                // Push the expense ID to the friend's expenses as well
                 member.expenses.push(expense._id);
             }
 
-            // Save the updated user data for each member
             member.markModified('debts');
             await member.save();
         }
 
-        // Save the updated payer data
         payer.markModified('debts');
         await payer.save();
 
-        // Push the expense ID to the group's expenses array (assuming Group model has an expenses array)
         group.expenses.push(expense._id);
-        await group.save(); // Save the updated group data
+        await group.save();
 
         return res.status(200).json({
             message: `Expense of ${amount} split among group members successfully`,
@@ -137,5 +121,54 @@ exports.splitGroupExpense = async (req, res) => {
     } catch (error) {
         console.error('Error splitting group expense:', error);
         return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+exports.settleDebt = async (req, res) => {
+    const { phoneNumber } = req.body;
+    const userPhoneNumber = res.locals.jwtData.phoneNumber;
+
+    try {
+        const user = await User.findOne({ phoneNumber: userPhoneNumber });
+        const friend = await User.findOne({ phoneNumber });
+
+        if (!friend) {
+            return res.status(404).json({ message: 'Friend not found.' });
+        }
+
+        const netSettlement = Number(user.debts[friend._id]);
+
+        if (netSettlement === 0 && Number(friend.debts[user._id] || 0) === 0) {
+            return res.status(400).json({ message: 'No outstanding debts to settle.' });
+        }
+
+        user.balance = Number(user.balance) - netSettlement;
+        friend.balance = Number(friend.balance) + netSettlement;
+
+        user.debts[friend._id] = 0;
+        friend.debts[user._id] = 0;
+
+        user.markModified('debts');
+        friend.markModified('debts');
+
+        await user.save();
+        await friend.save();
+
+        res.status(200).json({
+            message: 'Debt settled successfully.',
+            user: {
+                id: user._id,
+                balance: user.balance,
+                debts: user.debts,
+            },
+            friend: {
+                id: friend._id,
+                balance: friend.balance,
+                debts: friend.debts,
+            },
+        });
+    } catch (error) {
+        console.error('Error settling debt:', error);
+        res.status(500).json({ message: 'An error occurred while settling the debt.' });
     }
 };
